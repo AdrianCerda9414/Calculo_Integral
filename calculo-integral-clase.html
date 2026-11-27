@@ -4,13 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:,">
-<title>Integrales por sustitución — Clase interactiva</title>
+<title>Integración por sustitución — Clase interactiva</title>
 
-<!-- KaTeX (render LaTeX de alta calidad) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-
-<!-- Firebase + QR -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -34,49 +31,41 @@
 
   .logo-fijo{position:fixed;top:12px;right:16px;height:50px;background:#fff;border-radius:12px;
              padding:.3rem .7rem;z-index:20}
-  .logo-centro{height:200px;max-width:90%;object-fit:contain;background:#fff;border-radius:22px;
-               padding:.8rem 1.6rem;margin-bottom:1.2rem}
+  .logo-centro{height:180px;max-width:90%;object-fit:contain;background:#fff;border-radius:22px;
+               padding:.8rem 1.6rem;margin-bottom:1rem}
 
   .slide{display:none;position:fixed;inset:0;padding:4vh 5vw;flex-direction:column;
          align-items:center;justify-content:center;text-align:center;overflow:auto;animation:entrar .5s ease}
   .slide.activa{display:flex}
   @keyframes entrar{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-  h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.15;margin-bottom:.4em}
-  h2{font-size:clamp(1.6rem,4vw,2.6rem);margin-bottom:.5em}
-  h3{font-size:1.25rem;margin-bottom:.4em;color:var(--verde-claro)}
-  p{font-size:clamp(1rem,2.1vw,1.3rem);line-height:1.5;margin:.4em 0}
-  li{font-size:clamp(1rem,1.9vw,1.15rem);line-height:1.5;margin:.3rem 0 .3rem 1.2rem;text-align:left}
-  .emoji{font-size:clamp(3rem,7vw,5rem)}
+  h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:.4em}
+  h2{font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.5em}
+  h3{font-size:1.2rem;margin-bottom:.4em;color:var(--verde-claro)}
+  p{font-size:clamp(1rem,2vw,1.25rem);line-height:1.5;margin:.4em 0}
   .portada-c{display:flex;flex-direction:column;align-items:center;gap:.3rem}
-  .lugar{font-size:clamp(1rem,1.9vw,1.2rem);opacity:.9}
 
-  /* QR */
   .qr-solo{background:#fff;border-radius:28px;padding:1.4rem 1.8rem;color:var(--azul);margin-top:1rem}
   .qr-solo canvas,.qr-solo img{display:block;margin:auto}
 
-  /* Cajas y layouts */
   .caja{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;
         padding:1rem 1.3rem;margin-top:.8rem;width:min(900px,100%);text-align:left}
   .dos{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:min(1000px,100%);margin-top:.8rem}
   .dos .caja{margin-top:0}
 
-  /* Ecuaciones destacadas */
-  .eq{display:block;text-align:center;font-size:clamp(1.15rem,2.2vw,1.5rem);margin:.9rem 0;
+  .eq{display:block;text-align:center;font-size:clamp(1.1rem,2.2vw,1.5rem);margin:.9rem 0;
       padding:.6rem 1rem;background:rgba(255,255,255,.06);border-radius:14px;border:1px solid var(--borde)}
-  .eq-grande{font-size:clamp(1.4rem,3vw,2rem)}
+  .eq-grande{font-size:clamp(1.35rem,2.8vw,1.9rem)}
 
-  /* Ejercicio (formato común) */
   .exercise{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;
             padding:1rem 1.4rem;width:min(920px,100%);margin:.8rem 0;text-align:left}
   .paso{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:.55rem 0;font-size:1.05rem}
   .paso b{color:var(--dorado);min-width:4.5rem}
-  .blk{width:120px;padding:.42rem .6rem;border-radius:8px;border:2px solid var(--verde-claro);
+  .blk{width:130px;padding:.42rem .6rem;border-radius:8px;border:2px solid var(--verde-claro);
        background:rgba(255,255,255,.08);color:#fff;font-size:1rem;text-align:center;font-family:inherit}
   .blk:focus{outline:none;border-color:var(--dorado);background:rgba(255,255,255,.15)}
   .ans-ok{display:inline-block;padding:.35rem .7rem;border-radius:8px;
           background:rgba(126,212,145,.22);border:1px solid var(--verde-claro);font-weight:700}
 
-  /* Ordenamiento */
   .sort-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:min(1000px,100%);margin-top:.6rem}
   .sort-col{background:var(--tarjeta);border:1px solid var(--borde);border-radius:16px;
             padding:.8rem;min-height:220px}
@@ -88,15 +77,12 @@
   .sort-item .badge{display:inline-flex;align-items:center;justify-content:center;
                     width:1.7rem;height:1.7rem;border-radius:50%;background:var(--verde);
                     font-weight:800;flex-shrink:0}
-  .sort-item.used{opacity:.35;pointer-events:none}
 
-  /* Nube de palabras */
   .nube-lista{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem 1.2rem;
               width:min(1000px,100%);min-height:160px;margin-top:.8rem}
   .palabra{font-size:clamp(1.1rem,2.4vw,1.8rem);font-weight:800;line-height:1.2;
            text-shadow:0 2px 10px rgba(0,0,0,.45)}
 
-  /* Vista alumno */
   #alumno{max-width:720px;margin:0 auto}
   #alumno>h2{text-align:center;font-size:1.9rem;margin-bottom:.3rem}
   .estado{text-align:center;color:var(--verde-claro);font-weight:700;margin-bottom:.8rem;font-size:.95rem}
@@ -114,14 +100,12 @@
   .btn:hover{filter:brightness(1.12)}
   .btn:disabled{opacity:.4;cursor:default}
 
-  /* Controles docente */
   .barra{position:fixed;bottom:0;left:0;height:6px;background:linear-gradient(90deg,var(--verde),var(--verde-claro));transition:width .4s}
   .nav{position:fixed;bottom:16px;right:18px;display:flex;gap:8px;align-items:center;z-index:5}
   .nav button{background:rgba(255,255,255,.15);color:#fff;border:1px solid var(--borde);
               border-radius:12px;padding:.5rem .9rem;font-size:1rem;cursor:pointer}
   .nav span{font-size:.95rem;opacity:.85;min-width:56px;text-align:center}
 
-  /* Resultados en vivo */
   .subs{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
   .sub-pill{padding:.3rem .7rem;border-radius:999px;background:rgba(255,255,255,.12);
             font-size:.88rem;border:1px solid var(--borde)}
@@ -132,8 +116,8 @@
   @media (max-width:700px){
     .dos,.sort-wrap{grid-template-columns:1fr}
     .logo-fijo{height:36px}
-    .logo-centro{height:140px}
-    .blk{width:90px}
+    .logo-centro{height:120px}
+    .blk{width:100px}
   }
 </style>
 </head>
@@ -144,14 +128,13 @@
 const CONFIG = {
   sala: "calculo-integral-sustitucion",
   firebase: {
-    apiKey:            "AIzaSyBd3YsQ0F2_VKz14BouLqOFxvRbLuqjb_o",  // ← pega aquí TU apiKey real (la que ocultaste)
+    apiKey:            "AIzaSyBd3YsQ0F2_VKz14BouLqOFxvRbLuqjb_o",
     authDomain:        "calculo-integral-clase.firebaseapp.com",
     databaseURL:       "https://calculo-integral-clase-default-rtdb.firebaseio.com",
     projectId:         "calculo-integral-clase",
     storageBucket:     "calculo-integral-clase.firebasestorage.app",
     messagingSenderId: "1091496478057",
     appId:             "1:1091496478057:web:0c2ee1101fb831d86ae9f8"
-    // measurementId NO es necesario, se omite
   },
   docente: "Dr. J. Adrián Cerda R."
 };
@@ -161,7 +144,6 @@ const CONFIG = {
 <div id="docente">
   <img class="logo-fijo" id="logo-fijo" alt="Universidad" style="visibility:hidden">
 
-  <!-- 0 · Portada -->
   <section class="slide activa">
     <div class="portada-c">
       <img class="logo-centro" id="logo-centro" alt="Universidad">
@@ -172,33 +154,29 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 1 · QR -->
   <section class="slide">
     <h2>📱 Escanea para participar</h2>
     <div class="qr-solo"><div id="qr-grande"></div></div>
     <p style="opacity:.8;margin-top:1rem">Abre el enlace en tu celular y escribe tu nombre.</p>
   </section>
 
-  <!-- 2 · Objetivos -->
   <section class="slide">
     <h2>🎯 Al final de la clase podrás…</h2>
     <div class="caja">
-      <p>1. Reconocer cuándo aplicar el <b>método de sustitución</b>.</p>
+      <p>1. Reconocer cuándo aplicar el método de <b>sustitución</b>.</p>
       <p>2. <b>Completar el diferencial</b> ajustando constantes.</p>
       <p>3. Resolver integrales del tipo <span data-tex="\int f(g(x))\,g'(x)\,dx"></span>.</p>
-      <p>4. Aplicar <b>completar el cuadrado</b> antes de sustituir.</p>
+      <p>4. Elegir correctamente la <span data-tex="u"></span> en integrales de sustitución.</p>
     </div>
   </section>
 
-  <!-- 3 · Idea central -->
   <section class="slide">
     <h2>💡 La sustitución es la regla de la cadena al revés</h2>
     <p>Si una integral contiene una función y (casi) su derivada, conviene sustituir.</p>
-    <div class="eq eq-grande" data-tex="\int f(g(x))\,g'(x)\,dx \;\overset{u=g(x)}{=\joinrel=\joinrel=}\; \int f(u)\,du = F(u) + C"></div>
+    <div class="eq eq-grande" data-tex="\int f(g(x))\,g'(x)\,dx \;\overset{u=g(x)}{=}\; \int f(u)\,du = F(u) + C"></div>
     <p>El truco está en <b>completar el diferencial</b>: que aparezca exactamente <span data-tex="du = g'(x)\,dx"></span>.</p>
   </section>
 
-  <!-- 4 · Patrón general -->
   <section class="slide">
     <h2>🔍 Patrón general</h2>
     <div class="dos">
@@ -209,7 +187,7 @@ const CONFIG = {
       </div>
       <div class="caja">
         <h3>Paso 2 · Derivar</h3>
-        <p>Se obtiene el diferencial que necesitamos que aparezca multiplicando.</p>
+        <p>Obtenemos el diferencial que necesitamos que aparezca multiplicando.</p>
         <div class="eq" data-tex="du = g'(x)\,dx"></div>
       </div>
     </div>
@@ -220,7 +198,6 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 5 · Ejemplo resuelto -->
   <section class="slide">
     <h2>✏️ Ejemplo resuelto</h2>
     <div class="eq eq-grande" data-tex="\int 2x\,\cos(x^{2})\,dx"></div>
@@ -234,7 +211,6 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 6 · Votación: ¿cuál u? -->
   <section class="slide">
     <h2>🗳️ ¿Cuál u elegirías?</h2>
     <div class="eq eq-grande" data-tex="\int x\,\sqrt{x^{2}+5}\;dx"></div>
@@ -242,25 +218,23 @@ const CONFIG = {
     <div class="tally" id="votos-tally"></div>
   </section>
 
-  <!-- 7 · Ejercicio 1: Completar el diferencial -->
   <section class="slide">
     <h2>🧩 Ejercicio 1 · Completar el diferencial</h2>
     <div class="eq eq-grande" data-tex="\int 6x^{2}\,(x^{3}+1)^{5}\,dx"></div>
     <div class="exercise">
       <div class="paso"><b>Paso 1.</b> Sea <span data-tex="u = x^{3}+1"></span>, entonces</div>
       <div class="paso" style="margin-left:2rem"><span data-tex="du ="></span> <span class="ans-ok">3x²</span> <span data-tex="\,dx"></span></div>
-      <div class="paso" style="margin-top:.8rem"><b>Paso 2.</b> Ajustamos la constante:</div>
+      <div class="paso" style="margin-top:.6rem"><b>Paso 2.</b> Ajustamos la constante:</div>
       <div class="paso" style="margin-left:2rem"><span data-tex="6x^{2}\,dx ="></span> <span class="ans-ok">2</span> <span data-tex="\cdot du"></span></div>
-      <div class="paso" style="margin-top:.8rem"><b>Paso 3.</b> Resultado final:</div>
-      <div class="paso" style="margin-left:2rem"><span class="ans-ok" data-tex="\dfrac{1}{3}(x^{3}+1)^{6}+C"></span></div>
+      <div class="paso" style="margin-top:.6rem"><b>Paso 3.</b> Resultado final:</div>
+      <div class="paso" style="margin-left:2rem"><span class="ans-ok" data-tex="\tfrac{1}{3}(x^{3}+1)^{6}+C"></span></div>
     </div>
     <div class="caja">
-      <h3>Respuestas de los alumnos <span id="ej1-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3>
+      <h3>Respuestas <span id="ej1-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3>
       <div class="subs" id="ej1-subs"></div>
     </div>
   </section>
 
-  <!-- 8 · Ejercicio 2: Ordenar pasos -->
   <section class="slide">
     <h2>🧩 Ejercicio 2 · Ordena el procedimiento</h2>
     <div class="eq eq-grande" data-tex="\int x\,\sin(x^{2})\,dx"></div>
@@ -276,46 +250,16 @@ const CONFIG = {
       </ol>
     </div>
     <div class="caja">
-      <h3>Envíos de los alumnos <span id="ej2-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3>
+      <h3>Envíos <span id="ej2-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3>
       <div class="subs" id="ej2-subs"></div>
     </div>
   </section>
 
-  <!-- 9 · Completar el cuadrado (teoría) -->
   <section class="slide">
-    <h2>🎯 Completar el cuadrado antes de sustituir</h2>
-    <p>Algunas integrales del tipo <span data-tex="\displaystyle\int \frac{dx}{x^{2}+bx+c}"></span> necesitan "preparar" el denominador.</p>
-    <div class="eq eq-grande" data-tex="x^{2}+bx+c \;=\; \left(x+\frac{b}{2}\right)^{2} + \left(c - \frac{b^{2}}{4}\right)"></div>
+    <h2>🧩 Ejercicio 3 · ¿Cuál es la u correcta?</h2>
+    <div class="eq eq-grande" data-tex="\int (2x+1)(x^{2}+x)^{3}\,dx"></div>
     <div class="caja">
-      <h3>Ejemplo</h3>
-      <div class="eq" data-tex="x^{2}+6x+10 \;=\; (x+3)^{2}+1"></div>
-      <p>Con <span data-tex="u = x+3"></span> y <span data-tex="du = dx"></span>:</p>
-      <div class="eq" data-tex="\int \frac{dx}{(x+3)^{2}+1} = \int \frac{du}{u^{2}+1} = \arctan(u)+C"></div>
-    </div>
-  </section>
-
-  <!-- 10 · Ejercicio 3: Completar el cuadrado -->
-  <section class="slide">
-    <h2>🧩 Ejercicio 3 · Completar el cuadrado</h2>
-    <div class="eq eq-grande" data-tex="\int \frac{dx}{x^{2}+4x+5}"></div>
-    <div class="exercise">
-      <div class="paso"><b>Paso 1.</b> Completa el cuadrado:</div>
-      <div class="paso" style="margin-left:2rem">
-        <span data-tex="x^{2}+4x+5 = (x+"></span>
-        <span class="ans-ok">2</span>
-        <span data-tex=")^{2} +"></span>
-        <span class="ans-ok">1</span>
-      </div>
-      <div class="paso" style="margin-top:.6rem"><b>Paso 2.</b> Sustitución:</div>
-      <div class="paso" style="margin-left:2rem">
-        <span data-tex="u ="></span>
-        <span class="ans-ok">x+2</span>
-        <span data-tex=", \quad du = dx"></span>
-      </div>
-      <div class="paso" style="margin-top:.6rem"><b>Paso 3.</b> Integra:</div>
-      <div class="paso" style="margin-left:2rem">
-        <span class="ans-ok" data-tex="\arctan(x+2)+C"></span>
-      </div>
+      <p>Los alumnos deben identificar la sustitución correcta. La respuesta correcta es <span data-tex="u = x^{2}+x"></span>.</p>
     </div>
     <div class="caja">
       <h3>Envíos <span id="ej3-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3>
@@ -323,17 +267,30 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 11 · Nube de palabras -->
+  <section class="slide">
+    <h2>🧩 Ejercicio 4 · Completa todos los pasos</h2>
+    <div class="eq eq-grande" data-tex="\int x\,e^{x^{2}}\,dx"></div>
+    <div class="exercise">
+      <div class="paso"><b>Paso 1.</b> <span data-tex="u ="></span> <span class="ans-ok">x²</span></div>
+      <div class="paso"><b>Paso 2.</b> <span data-tex="du ="></span> <span class="ans-ok">2x</span> <span data-tex="\,dx"></span></div>
+      <div class="paso"><b>Paso 3.</b> <span data-tex="x\,dx ="></span> <span class="ans-ok">½</span> <span data-tex="\,du"></span></div>
+      <div class="paso"><b>Paso 4.</b> <span data-tex="\int x\,e^{x^{2}}\,dx ="></span> <span class="ans-ok" data-tex="\tfrac{1}{2}e^{x^{2}}+C"></span></div>
+    </div>
+    <div class="caja">
+      <h3>Envíos <span id="ej4-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3>
+      <div class="subs" id="ej4-subs"></div>
+    </div>
+  </section>
+
   <section class="slide">
     <h2>☁️ ¿Qué te llevas de la clase?</h2>
     <p>Una palabra o una frase. Aparecerá aquí en vivo.</p>
     <div class="nube-lista" id="nube"></div>
   </section>
 
-  <!-- 12 · Cierre -->
   <section class="slide">
-    <div class="emoji">🌟</div>
-    <p class="eq-grande" style="max-width:900px;font-size:clamp(1.4rem,3vw,2.2rem);line-height:1.4">
+    <div class="emoji" style="font-size:4rem">🌟</div>
+    <p style="font-size:clamp(1.4rem,3vw,2.2rem);line-height:1.4;max-width:900px">
       Sustituir no es adivinar:<br>es <b>completar el diferencial</b> con paciencia.
     </p>
     <p style="margin-top:1.4rem;opacity:.85">Dr. J. Adrián Cerda R.</p>
@@ -359,7 +316,6 @@ const CONFIG = {
     <p>Observa la pantalla. La actividad aparecerá cuando el docente la abra.</p>
   </div>
 
-  <!-- Votación -->
   <div class="act bloque" data-act="votos">
     <h3>¿Cuál u elegirías?</h3>
     <div class="eq" style="font-size:1.1rem" data-tex="\int x\sqrt{x^{2}+5}\,dx"></div>
@@ -367,7 +323,6 @@ const CONFIG = {
     <div class="msg" id="msg-voto"></div>
   </div>
 
-  <!-- Ejercicio 1 -->
   <div class="act bloque" data-act="ej1">
     <h3>Ejercicio 1 · Completar el diferencial</h3>
     <div class="eq" style="font-size:1.1rem" data-tex="\int 6x^{2}(x^{3}+1)^{5}\,dx"></div>
@@ -375,16 +330,15 @@ const CONFIG = {
     <div class="paso"><span data-tex="du ="></span><input class="blk" id="e1b0" placeholder="?"><span data-tex="\,dx"></span></div>
     <div class="paso"><span data-tex="6x^{2}\,dx ="></span><input class="blk" id="e1b1" placeholder="?"><span data-tex="\cdot du"></span></div>
     <p style="margin-top:.6rem">Resultado final:</p>
-    <input type="text" id="e1b2" placeholder="(1/3)(x³+1)⁶ + C" style="width:100%">
+    <input type="text" id="e1b2" placeholder="(1/3)(x³+1)⁶ + C">
     <div class="botones"><button class="btn" id="e1-submit">Enviar</button></div>
     <div class="msg" id="msg-e1"></div>
   </div>
 
-  <!-- Ejercicio 2 -->
   <div class="act bloque" data-act="ej2">
     <h3>Ejercicio 2 · Ordena los pasos</h3>
     <div class="eq" style="font-size:1.1rem" data-tex="\int x\sin(x^{2})\,dx"></div>
-    <p>Toca cada paso en el <b>orden correcto</b>. Toca un paso del orden para devolverlo.</p>
+    <p>Toca cada paso en el <b>orden correcto</b>. Toca un paso ya colocado para devolverlo.</p>
     <div class="sort-wrap">
       <div class="sort-col">
         <h4>Disponibles</h4>
@@ -402,26 +356,26 @@ const CONFIG = {
     <div class="msg" id="msg-e2"></div>
   </div>
 
-  <!-- Ejercicio 3 -->
   <div class="act bloque" data-act="ej3">
-    <h3>Ejercicio 3 · Completar el cuadrado</h3>
-    <div class="eq" style="font-size:1.1rem" data-tex="\int \frac{dx}{x^{2}+4x+5}"></div>
-    <p>Completa el cuadrado:</p>
-    <div class="paso">
-      <span data-tex="x^{2}+4x+5 = (x+"></span>
-      <input class="blk" id="e3b0" placeholder="A">
-      <span data-tex=")^{2} +"></span>
-      <input class="blk" id="e3b1" placeholder="B">
-    </div>
-    <p>Sustitución:</p>
-    <div class="paso"><span data-tex="u ="></span><input class="blk" id="e3b2" placeholder="u" style="width:100px"></div>
-    <p>Resultado:</p>
-    <input type="text" id="e3b3" placeholder="arctan(...) + C" style="width:100%">
-    <div class="botones"><button class="btn" id="e3-submit">Enviar</button></div>
-    <div class="msg" id="msg-e3"></div>
+    <h3>Ejercicio 3 · ¿Cuál es la u correcta?</h3>
+    <div class="eq" style="font-size:1.1rem" data-tex="\int (2x+1)(x^{2}+x)^{3}\,dx"></div>
+    <p>Selecciona la sustitución que resuelve la integral.</p>
+    <div class="botones" id="ej3-opciones" style="flex-direction:column"></div>
+    <div class="msg" id="msg-ej3"></div>
   </div>
 
-  <!-- Nube -->
+  <div class="act bloque" data-act="ej4">
+    <h3>Ejercicio 4 · Completa todos los pasos</h3>
+    <div class="eq" style="font-size:1.1rem" data-tex="\int x\,e^{x^{2}}\,dx"></div>
+    <div class="paso"><b>1.</b><span data-tex="u ="></span><input class="blk" id="e4b0" placeholder="u"></div>
+    <div class="paso"><b>2.</b><span data-tex="du ="></span><input class="blk" id="e4b1" placeholder="?"><span data-tex="\,dx"></span></div>
+    <div class="paso"><b>3.</b><span data-tex="x\,dx ="></span><input class="blk" id="e4b2" placeholder="?"><span data-tex="\,du"></span></div>
+    <p style="margin-top:.6rem">Resultado final:</p>
+    <input type="text" id="e4b3" placeholder="(1/2)e^(x²) + C">
+    <div class="botones"><button class="btn" id="e4-submit">Enviar</button></div>
+    <div class="msg" id="msg-e4"></div>
+  </div>
+
   <div class="act bloque" data-act="palabra">
     <h3>¿Qué te llevas de la clase?</h3>
     <input type="text" id="palabra" placeholder="Una palabra o una frase" maxlength="120">
@@ -430,9 +384,8 @@ const CONFIG = {
   </div>
 </div>
 
-<!-- ============ SCRIPT ============ -->
 <script>
-/* ---------- init ---------- */
+/* ==================== CONFIG E INIT ==================== */
 const params = new URLSearchParams(location.search);
 const esAlumno = params.has('p');
 if (esAlumno) document.body.classList.add('alumno');
@@ -444,7 +397,17 @@ firebase.initializeApp(CONFIG.firebase);
 const db = firebase.database();
 const R  = 'sala/' + CONFIG.sala;
 
-/* ---------- KaTeX helpers ---------- */
+/* Diagnóstico de conexión visible en consola */
+db.ref('.info/connected').on('value', s => {
+  const on = s.val() === true;
+  console.log('[Firebase] ' + (on ? '✅ conectado' : '❌ desconectado') + ' — sala: ' + R);
+  if (!on && esAlumno) {
+    const e = $('alumno-estado');
+    if (e) e.textContent = '⚠️ Sin conexión a Firebase — revisa tu red';
+  }
+});
+
+/* ==================== KaTeX ==================== */
 function renderTex(root){
   (root || document).querySelectorAll('[data-tex]').forEach(el => {
     if (el.dataset.rendered === '1') return;
@@ -454,31 +417,25 @@ function renderTex(root){
     } catch(e){ el.textContent = el.dataset.tex; }
   });
 }
+function tex(latex){
+  const s = document.createElement('span');
+  try { katex.render(latex, s, {throwOnError:false, displayMode:false}); }
+  catch(e){ s.textContent = latex; }
+  return s;
+}
 window.addEventListener('load', () => renderTex());
 
-/* ---------- datos de las actividades ---------- */
+/* ==================== DATOS ==================== */
 const PREG_VOTO = {
-  q: '\\int x\\sqrt{x^{2}+5}\\,dx',
   opciones: [
-    {id:'A', tex:'u = x',          ok:false},
-    {id:'B', tex:'u = \\sqrt{x}',  ok:false},
-    {id:'C', tex:'u = x^{2}+5',    ok:true },
-    {id:'D', tex:'u = x^{2}',      ok:false}
-  ]
-};
-
-const EJ1 = {
-  integral: '\\int 6x^{2}(x^{3}+1)^{5}\\,dx',
-  blanks: [
-    {id:'e1b0', answer:'3x^2', correct:['3x^2','3x²','3x2']},
-    {id:'e1b1', answer:'2',    correct:['2']},
-    {id:'e1b2', answer:'(1/3)(x³+1)⁶+C'}
+    {id:'A', tex:'u = x',         ok:false},
+    {id:'B', tex:'u = \\sqrt{x}', ok:false},
+    {id:'C', tex:'u = x^{2}+5',   ok:true },
+    {id:'D', tex:'u = x^{2}',     ok:false}
   ]
 };
 
 const EJ2 = {
-  integral: '\\int x\\sin(x^{2})\\,dx',
-  // id = posición correcta (0..5)
   steps: [
     {id:0, tex:'u = x^{2}'},
     {id:1, tex:'du = 2x\\,dx'},
@@ -490,12 +447,11 @@ const EJ2 = {
 };
 
 const EJ3 = {
-  integral: '\\int \\frac{dx}{x^{2}+4x+5}',
-  blanks: [
-    {id:'e3b0', answer:'2',          correct:['2']},
-    {id:'e3b1', answer:'1',          correct:['1']},
-    {id:'e3b2', answer:'x+2',        correct:['x+2','x + 2']},
-    {id:'e3b3', answer:'arctan(x+2)+C'}
+  opciones: [
+    {id:'A', tex:'u = x^{2}',         ok:false},
+    {id:'B', tex:'u = x^{2}+x',       ok:true },
+    {id:'C', tex:'u = 2x+1',          ok:false},
+    {id:'D', tex:'u = (x^{2}+x)^{3}', ok:false}
   ]
 };
 
@@ -509,37 +465,31 @@ const DIAPOS = [
   {t:'Voto u',         act:'votos'},
   {t:'Ejercicio 1',    act:'ej1'},
   {t:'Ejercicio 2',    act:'ej2'},
-  {t:'Cuadrado',       act:null},
   {t:'Ejercicio 3',    act:'ej3'},
+  {t:'Ejercicio 4',    act:'ej4'},
   {t:'Nube',           act:'palabra'},
   {t:'Cierre',         act:null}
 ];
 
-/* ---------- estado de sesión ---------- */
+/* ==================== ESTADO LOCAL ==================== */
 let VER = '0';
-const fkey     = k => `${CONFIG.sala}-${VER}-${k}`;
+const fkey     = k => CONFIG.sala + '-' + VER + '-' + k;
 const leer     = k => localStorage.getItem(fkey(k));
 const setLocal = (k, v) => localStorage.setItem(fkey(k), v);
 const flag     = k => leer(k) === '1';
 const setFlag  = k => setLocal(k, '1');
 
-/* ---------- utilidades ---------- */
+/* ==================== UTILS ==================== */
 function el(tag, cls, txt){
   const e = document.createElement(tag);
   if (cls) e.className = cls;
   if (txt != null) e.textContent = txt;
   return e;
 }
-function boton(txt, fn, cls=''){
-  const b = el('button', 'btn ' + cls, txt);
+function boton(txt, fn, cls){
+  const b = el('button', 'btn ' + (cls||''), txt);
   b.onclick = fn;
   return b;
-}
-function tex(latex){
-  const s = document.createElement('span');
-  try { katex.render(latex, s, {throwOnError:false, displayMode:false}); }
-  catch(e){ s.textContent = latex; }
-  return s;
 }
 function qr(cont, texto, tam){
   cont.innerHTML = '';
@@ -553,7 +503,11 @@ function cargarLogo(id){
   img.src = rutas[0];
 }
 function normalizar(s){
-  return (s||'').toString().toLowerCase().replace(/\s+/g,'').replace(/[·\*×]/g,'');
+  return (s||'').toString().toLowerCase().replace(/\s+/g,'').replace(/[·*×]/g,'');
+}
+function pillsDe(cont, items, renderer){
+  cont.innerHTML = '';
+  items.slice(-30).forEach(it => cont.appendChild(renderer(it)));
 }
 
 /* ==================== VISTA DOCENTE ==================== */
@@ -572,24 +526,41 @@ if (!esAlumno){
     $('barra').style.width = ((actual + 1) / slidesT.length * 100) + '%';
     $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
     $('logo-fijo').style.visibility = actual === 0 ? 'hidden' : 'visible';
-    db.ref(R + '/estado').set({slide: actual});
+    db.ref(R + '/estado').set({slide: actual})
+      .then(() => console.log('[Firebase] estado → slide ' + actual))
+      .catch(e => console.error('[Firebase] error al escribir estado:', e));
     renderTex();
   }
   $('next').onclick = () => irA(actual + 1);
   $('prev').onclick = () => irA(actual - 1);
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'INPUT') return;
-    if (['ArrowRight',' ','PageDown'].includes(e.key)){ e.preventDefault(); irA(actual + 1); }
-    if (['ArrowLeft','PageUp'].includes(e.key)) irA(actual - 1);
+    if (['ArrowRight',' ','PageDown'].indexOf(e.key) >= 0){ e.preventDefault(); irA(actual + 1); }
+    if (['ArrowLeft','PageUp'].indexOf(e.key) >= 0) irA(actual - 1);
   });
+
   $('reset').onclick = () => {
     if (!confirm('¿Borrar todas las participaciones?')) return;
-    db.ref(R).update({votos:null, ej1:null, ej2:null, ej3:null, nube:null, ver:String(Date.now())})
-      .then(() => irA(0));
+    Promise.all([
+      db.ref(R + '/votos').remove(),
+      db.ref(R + '/ej1').remove(),
+      db.ref(R + '/ej2').remove(),
+      db.ref(R + '/ej3').remove(),
+      db.ref(R + '/ej4').remove(),
+      db.ref(R + '/nube').remove(),
+      db.ref(R + '/ver').set(String(Date.now()))
+    ]).then(() => irA(0))
+      .catch(e => { console.error('Reset error:', e); alert('No se pudo borrar: ' + e.message); });
   };
-  db.ref(R + '/estado').once('value', s => irA(s.val()?.slide ?? 0));
 
-  /* ---- Votación (slide 6) ---- */
+  db.ref(R + '/estado').once('value', s => {
+    const v = s.val();
+    irA((v && typeof v.slide === 'number') ? v.slide : 0);
+  });
+
+  db.ref(R + '/ver').on('value', s => { VER = s.val() || '0'; });
+
+  /* ---- Votación ---- */
   const votosCont = $('votos-docente');
   PREG_VOTO.opciones.forEach(op => {
     const row = el('div');
@@ -616,91 +587,104 @@ if (!esAlumno){
   });
   db.ref(R + '/votos').on('value', s => {
     const c = {A:0,B:0,C:0,D:0};
-    s.forEach(ch => { const o = ch.val().op; if (o in c) c[o]++; });
-    const total = Object.values(c).reduce((a,b)=>a+b,0) || 1;
+    s.forEach(ch => { const v = ch.val(); if (v && v.op in c) c[v.op]++; });
+    const total = (c.A + c.B + c.C + c.D) || 1;
     Object.keys(c).forEach(k => {
       const f = $('voto-fill-' + k); if (f) f.style.width = (c[k]/total*100) + '%';
       const n = $('voto-cnt-' + k); if (n) n.textContent = c[k];
     });
-    $('votos-tally').textContent = `Correcta: C) u = x² + 5  —  ${c.C} de ${total} acertaron`;
+    $('votos-tally').textContent = 'Correcta: C) u = x² + 5  —  ' + c.C + ' de ' + total + ' acertaron';
   });
 
-  /* ---- Ejercicios: escuchar envíos ---- */
-  function pillsDe(cont, items, renderer){
-    cont.innerHTML = '';
-    items.slice(-20).forEach(it => cont.appendChild(renderer(it)));
-  }
+  /* ---- Escuchas de ejercicios ---- */
   db.ref(R + '/ej1').on('value', s => {
     const items = []; s.forEach(x => items.push(x.val()));
-    $('ej1-count').textContent = `(${items.length} envíos)`;
+    $('ej1-count').textContent = '(' + items.length + ' envíos)';
     pillsDe($('ej1-subs'), items, it => {
-      const ok = EJ1.blanks.every((b,i) => b.correct ? b.correct.includes(normalizar(it.ans?.[i])) : true);
+      const a0 = normalizar(it.ans && it.ans[0]);
+      const a1 = normalizar(it.ans && it.ans[1]);
+      const ok = (['3x^2','3x²','3x2'].indexOf(a0) >= 0) && a1 === '2';
       const p = el('div', 'sub-pill ' + (ok ? 'ok' : 'bad'));
-      p.textContent = `${it.n || '?'}: ${(it.ans||[]).join(' | ')}`;
-      return p;
-    });
-  });
-  db.ref(R + '/ej2').on('value', s => {
-    const items = []; s.forEach(x => items.push(x.val()));
-    $('ej2-count').textContent = `(${items.length} envíos)`;
-    pillsDe($('ej2-subs'), items, it => {
-      const ok = (it.orden||[]).join(',') === '0,1,2,3,4,5';
-      const p = el('div', 'sub-pill ' + (ok ? 'ok' : 'bad'));
-      p.textContent = `${it.n || '?'}: ${ok ? '✓ correcto' : '✗ ' + (it.orden||[]).length + '/6'}`;
-      return p;
-    });
-  });
-  db.ref(R + '/ej3').on('value', s => {
-    const items = []; s.forEach(x => items.push(x.val()));
-    $('ej3-count').textContent = `(${items.length} envíos)`;
-    pillsDe($('ej3-subs'), items, it => {
-      const p = el('div', 'sub-pill');
-      p.textContent = `${it.n || '?'}: A=${it.ans?.[0]||'?'}, B=${it.ans?.[1]||'?'}, u=${it.ans?.[2]||'?'}`;
+      p.textContent = (it.n || '?') + ': ' + ((it.ans && it.ans.join(' | ')) || '');
       return p;
     });
   });
 
-  /* ---- Nube (slide 11) ---- */
+  db.ref(R + '/ej2').on('value', s => {
+    const items = []; s.forEach(x => items.push(x.val()));
+    $('ej2-count').textContent = '(' + items.length + ' envíos)';
+    pillsDe($('ej2-subs'), items, it => {
+      const ok = it.orden && it.orden.join(',') === '0,1,2,3,4,5';
+      const p = el('div', 'sub-pill ' + (ok ? 'ok' : 'bad'));
+      p.textContent = (it.n || '?') + ': ' + (ok ? '✓ correcto' : '✗ ' + ((it.orden && it.orden.length) || 0) + '/6');
+      return p;
+    });
+  });
+
+  db.ref(R + '/ej3').on('value', s => {
+    const items = []; s.forEach(x => items.push(x.val()));
+    $('ej3-count').textContent = '(' + items.length + ' envíos)';
+    pillsDe($('ej3-subs'), items, it => {
+      const p = el('div', 'sub-pill ' + (it.ok ? 'ok' : 'bad'));
+      p.textContent = (it.n || '?') + ': ' + (it.op || '?') + (it.ok ? ' ✓' : ' ✗');
+      return p;
+    });
+  });
+
+  db.ref(R + '/ej4').on('value', s => {
+    const items = []; s.forEach(x => items.push(x.val()));
+    $('ej4-count').textContent = '(' + items.length + ' envíos)';
+    pillsDe($('ej4-subs'), items, it => {
+      const a = it.ans || [];
+      const p = el('div', 'sub-pill');
+      p.textContent = (it.n || '?') + ': u=' + (a[0]||'?') + ', du=' + (a[1]||'?');
+      return p;
+    });
+  });
+
+  /* ---- Nube ---- */
   const PALETA = ['#7ED491','#fde047','#ffffff','#60a5fa','#b388eb'];
   db.ref(R + '/nube').on('value', s => {
     const cont = $('nube'); cont.innerHTML = '';
     let n = 0;
     s.forEach(ch => {
-      const sp = el('span', 'palabra', ch.val().t);
-      sp.style.color = PALETA[n % PALETA.length];
-      n++; cont.appendChild(sp);
+      const v = ch.val();
+      if (v && v.t) {
+        const sp = el('span', 'palabra', v.t);
+        sp.style.color = PALETA[n % PALETA.length];
+        n++; cont.appendChild(sp);
+      }
     });
   });
-
-  /* ---- reset de marca local al cambiar ver ---- */
-  db.ref(R + '/ver').on('value', s => { VER = s.val() || '0'; });
 }
 
 /* ==================== VISTA ALUMNO ==================== */
 if (esAlumno){
   let SLIDE = 0;
-  let sortPool = [];
-  let sortOrder = [];
+  let sortPool = [], sortOrder = [];
 
-  /* ---- Votos ---- */
+  /* Votos */
   function pintarVotos(){
     const c = $('votos-alumno'); c.innerHTML = '';
     PREG_VOTO.opciones.forEach(op => {
-      const b = boton(op.id + ') ' + op.tex.replace(/\\/g,''), () => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.appendChild(document.createTextNode(op.id + ') '));
+      b.appendChild(tex(op.tex));
+      b.onclick = () => {
         const n = $('nombre').value.trim();
         if (!n){ $('msg-voto').textContent = 'Escribe tu nombre arriba.'; return; }
-        db.ref(R + '/votos').push({op: op.id, n, t: Date.now()});
-        setFlag('voto');
-        $('msg-voto').textContent = '¡Voto registrado! ✅';
-        pintarVotos();
-      });
+        db.ref(R + '/votos').push({op: op.id, n: n, t: Date.now()})
+          .then(() => { setFlag('voto'); $('msg-voto').textContent = '¡Voto registrado! ✅'; pintarVotos(); })
+          .catch(e => { $('msg-voto').textContent = 'Error: ' + e.message; });
+      };
       if (flag('voto')) b.disabled = true;
       c.appendChild(b);
     });
     if (flag('voto')) $('msg-voto').textContent = 'Ya votaste ✅';
   }
 
-  /* ---- Ejercicio 1 ---- */
+  /* Ejercicio 1 */
   function initEj1(){
     ['e1b0','e1b1','e1b2'].forEach(id => {
       const inp = $(id);
@@ -712,17 +696,21 @@ if (esAlumno){
     const n = $('nombre').value.trim();
     if (!n){ $('msg-e1').textContent = 'Escribe tu nombre.'; return; }
     if (flag('ej1-done')) return;
-    const ans = ['e1b0','e1b1','e1b2'].map(id => $(id).value.trim());
-    ans.forEach((v,i) => setLocal('ej1-' + ['e1b0','e1b1','e1b2'][i], v));
-    db.ref(R + '/ej1').push({n, ans, t: Date.now()});
-    setFlag('ej1-done');
-    ['e1b0','e1b1','e1b2'].forEach(id => $(id).disabled = true);
-    $('msg-e1').textContent = '¡Enviado! Respuestas correctas: 3x² · 2 · (1/3)(x³+1)⁶ + C';
+    const ids = ['e1b0','e1b1','e1b2'];
+    const ans = ids.map(id => $(id).value.trim());
+    ids.forEach((id,i) => setLocal('ej1-' + id, ans[i]));
+    db.ref(R + '/ej1').push({n: n, ans: ans, t: Date.now()})
+      .then(() => {
+        setFlag('ej1-done');
+        ids.forEach(id => $(id).disabled = true);
+        $('msg-e1').textContent = '¡Enviado! Correcto: 3x² · 2 · (1/3)(x³+1)⁶ + C';
+      })
+      .catch(e => { $('msg-e1').textContent = 'Error: ' + e.message; });
   };
 
-  /* ---- Ejercicio 2 (ordenar) ---- */
+  /* Ejercicio 2 */
   function initEj2(){
-    sortPool = [...EJ2.steps].sort(() => Math.random() - 0.5);
+    sortPool = EJ2.steps.slice().sort(() => Math.random() - 0.5);
     sortOrder = [];
     pintarSort();
     if (flag('ej2-done')){
@@ -734,11 +722,8 @@ if (esAlumno){
     const pool = $('sort-pool'); pool.innerHTML = '';
     sortPool.forEach((s, i) => {
       const d = el('div', 'sort-item');
-      const t = tex(s.tex);
-      d.appendChild(t);
-      d.onclick = () => {
-        sortOrder.push(s); sortPool.splice(i,1); pintarSort();
-      };
+      d.appendChild(tex(s.tex));
+      d.onclick = () => { if (flag('ej2-done')) return; sortOrder.push(s); sortPool.splice(i,1); pintarSort(); };
       pool.appendChild(d);
     });
     const ord = $('sort-order'); ord.innerHTML = '';
@@ -747,9 +732,7 @@ if (esAlumno){
       const b = el('span', 'badge'); b.textContent = i+1;
       d.appendChild(b);
       d.appendChild(tex(s.tex));
-      d.onclick = () => {
-        sortPool.push(s); sortOrder.splice(i,1); pintarSort();
-      };
+      d.onclick = () => { if (flag('ej2-done')) return; sortPool.push(s); sortOrder.splice(i,1); pintarSort(); };
       ord.appendChild(d);
     });
     $('e2-submit').disabled = sortPool.length > 0 || flag('ej2-done');
@@ -758,70 +741,103 @@ if (esAlumno){
     const n = $('nombre').value.trim();
     if (!n){ $('msg-e2').textContent = 'Escribe tu nombre.'; return; }
     const orden = sortOrder.map(s => s.id);
-    db.ref(R + '/ej2').push({n, orden, t: Date.now()});
-    setFlag('ej2-done');
-    const ok = orden.join(',') === '0,1,2,3,4,5';
-    $('msg-e2').textContent = ok
-      ? '¡Perfecto! 🎉 Orden correcto.'
-      : 'Enviado. Revisa con el docente el orden correcto.';
-    $('e2-submit').disabled = true;
+    db.ref(R + '/ej2').push({n: n, orden: orden, t: Date.now()})
+      .then(() => {
+        setFlag('ej2-done');
+        const ok = orden.join(',') === '0,1,2,3,4,5';
+        $('msg-e2').textContent = ok ? '¡Perfecto! 🎉' : 'Enviado. Revisa el orden con el docente.';
+        $('e2-submit').disabled = true;
+      })
+      .catch(e => { $('msg-e2').textContent = 'Error: ' + e.message; });
   };
   $('e2-reset').onclick = () => { if (!flag('ej2-done')) initEj2(); };
 
-  /* ---- Ejercicio 3 ---- */
-  function initEj3(){
-    ['e3b0','e3b1','e3b2','e3b3'].forEach(id => {
-      const inp = $(id);
-      if (flag('ej3-' + id)){ inp.disabled = true; inp.value = leer('ej3-' + id) || ''; }
+  /* Ejercicio 3 (MC) */
+  function pintarEj3(){
+    const c = $('ej3-opciones'); c.innerHTML = '';
+    EJ3.opciones.forEach(op => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.textAlign = 'left';
+      b.appendChild(document.createTextNode(op.id + ')  '));
+      b.appendChild(tex(op.tex));
+      b.onclick = () => {
+        if (flag('ej3-done')) return;
+        const n = $('nombre').value.trim();
+        if (!n){ $('msg-ej3').textContent = 'Escribe tu nombre.'; return; }
+        db.ref(R + '/ej3').push({n: n, op: op.id, ok: op.ok, t: Date.now()})
+          .then(() => {
+            setFlag('ej3-done');
+            $('msg-ej3').textContent = op.ok
+              ? '✅ ¡Correcto! u = x² + x.'
+              : '❌ Casi. La u correcta es x² + x (porque su derivada es 2x+1).';
+            pintarEj3();
+          })
+          .catch(e => { $('msg-ej3').textContent = 'Error: ' + e.message; });
+      };
+      if (flag('ej3-done')) b.disabled = true;
+      c.appendChild(b);
     });
-    if (flag('ej3-done')) $('msg-e3').textContent = 'Ya enviaste este ejercicio ✅';
   }
-  $('e3-submit').onclick = () => {
+
+  /* Ejercicio 4 */
+  function initEj4(){
+    ['e4b0','e4b1','e4b2','e4b3'].forEach(id => {
+      const inp = $(id);
+      if (flag('ej4-' + id)){ inp.disabled = true; inp.value = leer('ej4-' + id) || ''; }
+    });
+    if (flag('ej4-done')) $('msg-e4').textContent = 'Ya enviaste este ejercicio ✅';
+  }
+  $('e4-submit').onclick = () => {
     const n = $('nombre').value.trim();
-    if (!n){ $('msg-e3').textContent = 'Escribe tu nombre.'; return; }
-    if (flag('ej3-done')) return;
-    const ids = ['e3b0','e3b1','e3b2','e3b3'];
+    if (!n){ $('msg-e4').textContent = 'Escribe tu nombre.'; return; }
+    if (flag('ej4-done')) return;
+    const ids = ['e4b0','e4b1','e4b2','e4b3'];
     const ans = ids.map(id => $(id).value.trim());
-    ids.forEach((id,i) => setLocal('ej3-' + id, ans[i]));
-    db.ref(R + '/ej3').push({n, ans, t: Date.now()});
-    setFlag('ej3-done');
-    ids.forEach(id => $(id).disabled = true);
-    $('msg-e3').textContent = '¡Enviado! Correcto: A=2, B=1, u=x+2, resultado = arctan(x+2)+C';
+    ids.forEach((id,i) => setLocal('ej4-' + id, ans[i]));
+    db.ref(R + '/ej4').push({n: n, ans: ans, t: Date.now()})
+      .then(() => {
+        setFlag('ej4-done');
+        ids.forEach(id => $(id).disabled = true);
+        $('msg-e4').textContent = '¡Enviado! Correcto: u=x², du=2x dx, x dx = ½ du, resultado (1/2)e^(x²) + C';
+      })
+      .catch(e => { $('msg-e4').textContent = 'Error: ' + e.message; });
   };
 
-  /* ---- Palabra ---- */
+  /* Palabra */
   $('btn-palabra').onclick = () => {
     if (flag('palabra')){ $('msg-palabra').textContent = 'Ya enviaste tu palabra ✅'; return; }
     const t = $('palabra').value.trim().slice(0,120);
     if (!t) return;
-    db.ref(R + '/nube').push({t});
-    setFlag('palabra');
-    $('palabra').value = '';
-    $('msg-palabra').textContent = '¡Gracias! 🙌';
+    db.ref(R + '/nube').push({t: t})
+      .then(() => { setFlag('palabra'); $('palabra').value = ''; $('msg-palabra').textContent = '¡Gracias! 🙌'; })
+      .catch(e => { $('msg-palabra').textContent = 'Error: ' + e.message; });
   };
 
-  /* ---- Cambiar vista según slide ---- */
+  /* Cambio de vista */
   function pintarActivo(){
     const d = DIAPOS[SLIDE] || DIAPOS[0];
-    $('alumno-estado').textContent = `Diapositiva ${SLIDE+1} de ${DIAPOS.length}: ${d.t}`;
+    $('alumno-estado').textContent = 'Diapositiva ' + (SLIDE+1) + ' de ' + DIAPOS.length + ': ' + d.t;
     document.querySelectorAll('#alumno .act').forEach(a =>
       a.classList.toggle('on', a.dataset.act === d.act));
     $('espera').style.display = d.act ? 'none' : 'block';
     if (d.act === 'votos') pintarVotos();
     if (d.act === 'ej1')  initEj1();
     if (d.act === 'ej2')  initEj2();
-    if (d.act === 'ej3')  initEj3();
+    if (d.act === 'ej3')  pintarEj3();
+    if (d.act === 'ej4')  initEj4();
     renderTex();
   }
 
-  /* ---- Sync ---- */
+  /* Conexión con Firebase */
   db.ref(R + '/ver').on('value', s => { VER = s.val() || '0'; });
   db.ref(R + '/estado').on('value', s => {
-    SLIDE = s.val()?.slide ?? 0;
+    const v = s.val();
+    SLIDE = (v && typeof v.slide === 'number') ? v.slide : 0;
+    console.log('[Firebase] estado recibido: slide ' + SLIDE);
     pintarActivo();
   });
 
-  /* ---- Al cargar, renderizar LaTeX estático ---- */
   window.addEventListener('load', () => renderTex());
 }
 </script>
