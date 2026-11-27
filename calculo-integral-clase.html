@@ -499,7 +499,7 @@ function cargarLogo(id){
   const img = $(id); if (!img) return;
   const rutas = ['logo.png','logo.jpg','logo.svg'];
   let k = 0;
-  img.onerror = () => { k++; if (k < rutas.length) img.src = rutas[k]; else img.remove(); };
+  img.onerror = () => { k++; if (k < rutas.length) img.src = rutas[k]; else img.style.display = 'none'; };
   img.src = rutas[0];
 }
 function normalizar(s){
@@ -523,14 +523,17 @@ if (!esAlumno){
   function irA(n){
     actual = Math.max(0, Math.min(n, slidesT.length - 1));
     slidesT.forEach((s, k) => s.classList.toggle('activa', k === actual));
-    $('barra').style.width = ((actual + 1) / slidesT.length * 100) + '%';
-    $('contador').textContent = (actual + 1) + ' / ' + slidesT.length;
-    $('logo-fijo').style.visibility = actual === 0 ? 'hidden' : 'visible';
+    const barra = $('barra');
+    if (barra) barra.style.width = ((actual + 1) / slidesT.length * 100) + '%';
+    const contador = $('contador');
+    if (contador) contador.textContent = (actual + 1) + ' / ' + slidesT.length;
+    const lf = $('logo-fijo');
+    if (lf) lf.style.visibility = actual === 0 ? 'hidden' : 'visible';
     db.ref(R + '/estado').set({slide: actual})
       .then(() => console.log('[Firebase] estado → slide ' + actual))
       .catch(e => console.error('[Firebase] error al escribir estado:', e));
     renderTex();
-  }
+}
   $('next').onclick = () => irA(actual + 1);
   $('prev').onclick = () => irA(actual - 1);
   document.addEventListener('keydown', e => {
