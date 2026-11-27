@@ -29,7 +29,6 @@
   body:not(.alumno) #alumno{display:none}
   body.alumno .nav,body.alumno .barra{display:none}
 
-  /* Logo nativo, sin recuadro blanco */
   .logo-fijo{position:fixed;top:14px;right:18px;height:64px;object-fit:contain;z-index:20;pointer-events:none}
   .logo-centro{height:220px;max-width:85%;object-fit:contain;margin-bottom:.4rem}
 
@@ -58,7 +57,7 @@
   .exercise{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;
             padding:1rem 1.4rem;width:min(920px,100%);margin:.8rem 0;text-align:left}
   .paso{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:.55rem 0;font-size:1.05rem}
-  .blk{width:140px;padding:.45rem .6rem;border-radius:8px;border:2px solid var(--verde-claro);
+  .blk{width:180px;padding:.45rem .6rem;border-radius:8px;border:2px solid var(--verde-claro);
        background:rgba(255,255,255,.06);color:#fff;font-size:1rem;text-align:center;font-family:inherit}
   .blk:focus{outline:none;border-color:var(--dorado);background:rgba(255,255,255,.14)}
   .solucion{display:none;margin-top:.8rem;padding:.7rem 1rem;border-radius:12px;
@@ -114,7 +113,7 @@
     .dos,.sort-wrap{grid-template-columns:1fr}
     .logo-fijo{height:44px}
     .logo-centro{height:130px}
-    .blk{width:105px}
+    .blk{width:130px}
   }
 </style>
 </head>
@@ -139,7 +138,6 @@ const CONFIG = {
 <div id="docente">
   <img class="logo-fijo" id="logo-fijo" alt="Universidad" style="visibility:hidden">
 
-  <!-- 0 · Portada -->
   <section class="slide activa">
     <div class="portada-c">
       <img class="logo-centro" id="logo-centro" alt="Universidad">
@@ -150,14 +148,12 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 1 · QR -->
   <section class="slide">
     <h2>📱 Escanea para participar</h2>
     <div class="qr-solo"><div id="qr-grande"></div></div>
     <p style="opacity:.8;margin-top:1rem">Abre el enlace en tu celular y escribe tu nombre.</p>
   </section>
 
-  <!-- 2 · Objetivos -->
   <section class="slide">
     <h2>🎯 Al final de la clase podrás…</h2>
     <div class="caja">
@@ -168,7 +164,6 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 3 · Idea central -->
   <section class="slide">
     <h2>💡 La sustitución es la regla de la cadena al revés</h2>
     <p>Si una integral contiene una función y (casi) su derivada, conviene sustituir.</p>
@@ -176,7 +171,6 @@ const CONFIG = {
     <p>El truco está en <b>completar el diferencial</b>: que aparezca exactamente <span data-tex="du = g'(x)\,dx"></span>.</p>
   </section>
 
-  <!-- 4 · Patrón -->
   <section class="slide">
     <h2>🔍 Patrón general</h2>
     <div class="dos">
@@ -198,7 +192,6 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 5 · Ejemplo -->
   <section class="slide">
     <h2>✏️ Ejemplo resuelto</h2>
     <div class="eq eq-grande" data-tex="\int 2x\,\cos(x^{2})\,dx"></div>
@@ -211,7 +204,6 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 6 · Voto -->
   <section class="slide">
     <h2>🗳️ ¿Cuál u elegirías?</h2>
     <div class="eq eq-grande" data-tex="\int x\,\sqrt{x^{2}+5}\;dx"></div>
@@ -222,7 +214,6 @@ const CONFIG = {
     </div>
   </section>
 
-  <!-- 7-14 · Ejercicios (contenido generado por JS) -->
   <section class="slide"><h2>🧩 Ejercicio 1A · Completar el diferencial</h2><div id="doc-ej1"></div></section>
   <section class="slide"><h2>🧩 Ejercicio 1B · Completar el diferencial</h2><div id="doc-ej2"></div></section>
   <section class="slide"><h2>🧩 Ejercicio 2A · Ordena los pasos</h2><div id="doc-ej3"></div></section>
@@ -232,14 +223,12 @@ const CONFIG = {
   <section class="slide"><h2>🧩 Ejercicio 4A · Completa todos los pasos</h2><div id="doc-ej7"></div></section>
   <section class="slide"><h2>🧩 Ejercicio 4B · Completa todos los pasos</h2><div id="doc-ej8"></div></section>
 
-  <!-- 15 · Nube -->
   <section class="slide">
     <h2>☁️ ¿Qué te llevas de la clase?</h2>
     <p>Una palabra o una frase. Aparecerá aquí en vivo.</p>
     <div class="nube-lista" id="nube"></div>
   </section>
 
-  <!-- 16 · Cierre -->
   <section class="slide">
     <div style="font-size:4rem">🌟</div>
     <p style="font-size:clamp(1.4rem,3vw,2.2rem);line-height:1.4;max-width:900px">
@@ -367,24 +356,42 @@ const EX = {
   ej1: {
     type: 'completar',
     integral: '\\int 6x^{2}(x^{3}+1)^{5}\\,dx',
-    intro: 'Sea <span data-tex="u = x^{3}+1"></span>. Completa los espacios:',
+    intro: 'Sea <span data-tex="u = x^{3}+1"></span>. Escribe el diferencial completo (incluye dx o du según corresponda):',
     blanks: [
-      {label:'du =', suffix:'\\,dx', correct:['3x^2','3x²','3x2']},
-      {label:'6x^{2}\\,dx =', suffix:'\\cdot du', correct:['2']}
+      {label:'du =', correct:[
+        '3x^2dx','3x²dx','3x2dx',
+        '3x^2 dx','3x² dx','3x2 dx',
+        '3x^2·dx','3x²·dx'
+      ]},
+      {label:'6x^{2}\\,dx =', correct:[
+        '2du','2 du','2·du'
+      ]}
     ],
-    final: {label:'Resultado final:', correct:['(1/3)(x³+1)⁶+C','1/3(x³+1)⁶+C','(x³+1)⁶/3+C']},
-    solution: 'u = x³+1, du = 3x² dx, 6x² dx = 2·du, ∫2u⁵ du = (1/3)(x³+1)⁶ + C'
+    final: {label:'Resultado final:', correct:[
+      '(1/3)(x³+1)⁶+C','1/3(x³+1)⁶+C','(x³+1)⁶/3+C',
+      '(1/3)(x^3+1)^6+C','1/3(x^3+1)^6+C','(x^3+1)^6/3+C'
+    ]},
+    solution: 'u = x³+1, du = 3x² dx, 6x² dx = 2 du, ∫2u⁵ du = (1/3)(x³+1)⁶ + C'
   },
   ej2: {
     type: 'completar',
     integral: '\\int 12x^{3}(x^{4}+2)^{2}\\,dx',
-    intro: 'Sea <span data-tex="u = x^{4}+2"></span>. Completa los espacios:',
+    intro: 'Sea <span data-tex="u = x^{4}+2"></span>. Escribe el diferencial completo (incluye dx o du según corresponda):',
     blanks: [
-      {label:'du =', suffix:'\\,dx', correct:['4x^3','4x³','4x3']},
-      {label:'12x^{3}\\,dx =', suffix:'\\cdot du', correct:['3']}
+      {label:'du =', correct:[
+        '4x^3dx','4x³dx','4x3dx',
+        '4x^3 dx','4x³ dx','4x3 dx',
+        '4x^3·dx','4x³·dx'
+      ]},
+      {label:'12x^{3}\\,dx =', correct:[
+        '3du','3 du','3·du'
+      ]}
     ],
-    final: {label:'Resultado final:', correct:['(x⁴+2)³+C','(x^4+2)^3+C','(x⁴+2)³ +C']},
-    solution: 'u = x⁴+2, du = 4x³ dx, 12x³ dx = 3·du, ∫3u² du = (x⁴+2)³ + C'
+    final: {label:'Resultado final:', correct:[
+      '(x⁴+2)³+C','(x^4+2)^3+C','(x⁴+2)³ +C',
+      '(x⁴+2)³','(x^4+2)^3'
+    ]},
+    solution: 'u = x⁴+2, du = 4x³ dx, 12x³ dx = 3 du, ∫3u² du = (x⁴+2)³ + C'
   },
   ej3: {
     type: 'ordenar',
@@ -437,25 +444,45 @@ const EX = {
   ej7: {
     type: 'completar',
     integral: '\\int x\\,e^{x^{2}}\\,dx',
-    intro: 'Completa los 4 pasos:',
+    intro: 'Completa los pasos. En cada diferencial escribe la expresión completa (incluye dx o du):',
     blanks: [
-      {label:'u =', suffix:'', correct:['x^2','x²','x2']},
-      {label:'du =', suffix:'\\,dx', correct:['2x']},
-      {label:'x\\,dx =', suffix:'\\,du', correct:['1/2','½','0.5']}
+      {label:'u =', correct:['x^2','x²','x2']},
+      {label:'du =', correct:[
+        '2xdx','2x dx','2x·dx'
+      ]},
+      {label:'x\\,dx =', correct:[
+        '1/2du','1/2 du','1/2·du',
+        '½du','½ du','½·du',
+        '0.5du','0.5 du'
+      ]}
     ],
-    final: {label:'Resultado final:', correct:['(1/2)e^(x²)+C','½e^(x²)+C','e^(x²)/2+C','(1/2)e^(x^2)+C']},
+    final: {label:'Resultado final:', correct:[
+      '(1/2)e^(x²)+C','½e^(x²)+C','e^(x²)/2+C',
+      '(1/2)e^(x^2)+C','1/2e^(x^2)+C','e^(x^2)/2+C'
+    ]},
     solution: 'u=x², du=2x dx, x dx=½du, ∫½e^u du = ½e^u+C = ½e^(x²)+C'
   },
   ej8: {
     type: 'completar',
     integral: '\\int x^{2}\\,e^{x^{3}}\\,dx',
-    intro: 'Completa los 4 pasos:',
+    intro: 'Completa los pasos. En cada diferencial escribe la expresión completa (incluye dx o du):',
     blanks: [
-      {label:'u =', suffix:'', correct:['x^3','x³','x3']},
-      {label:'du =', suffix:'\\,dx', correct:['3x^2','3x²','3x2']},
-      {label:'x^{2}\\,dx =', suffix:'\\,du', correct:['1/3','⅓','0.333']}
+      {label:'u =', correct:['x^3','x³','x3']},
+      {label:'du =', correct:[
+        '3x^2dx','3x²dx','3x2dx',
+        '3x^2 dx','3x² dx','3x2 dx',
+        '3x^2·dx','3x²·dx'
+      ]},
+      {label:'x^{2}\\,dx =', correct:[
+        '1/3du','1/3 du','1/3·du',
+        '⅓du','⅓ du','⅓·du',
+        '0.333du','0.333 du'
+      ]}
     ],
-    final: {label:'Resultado final:', correct:['(1/3)e^(x³)+C','⅓e^(x³)+C','e^(x³)/3+C','(1/3)e^(x^3)+C']},
+    final: {label:'Resultado final:', correct:[
+      '(1/3)e^(x³)+C','⅓e^(x³)+C','e^(x³)/3+C',
+      '(1/3)e^(x^3)+C','1/3e^(x^3)+C','e^(x^3)/3+C'
+    ]},
     solution: 'u=x³, du=3x² dx, x² dx=(1/3)du, ∫(1/3)e^u du = (1/3)e^u+C = (1/3)e^(x³)+C'
   }
 };
@@ -485,7 +512,6 @@ function renderEjercicio(id, container, isTeacher){
   container.innerHTML = '';
   const ex = EX[id];
 
-  // Título/integral
   const eq = el('div', 'eq eq-grande');
   eq.setAttribute('data-tex', ex.integral);
   container.appendChild(eq);
@@ -820,10 +846,8 @@ if (!esAlumno){
   });
   db.ref(R + '/ver').on('value', s => { VER = s.val() || '0'; });
 
-  // Render ejercicios en la vista docente
   Object.keys(EX).forEach(id => renderEjercicio(id, $('doc-' + id), true));
 
-  // Votación
   const votosCont = $('votos-docente');
   VOTO.opciones.forEach(op => {
     const row = el('div');
@@ -862,7 +886,6 @@ if (!esAlumno){
     $('votos-tally').style.display = s.val() === true ? 'block' : 'none';
   });
 
-  // Nube
   const PALETA = ['#7ED491','#fde047','#ffffff','#60a5fa','#b388eb'];
   db.ref(R + '/nube').on('value', s => {
     const cont = $('nube'); cont.innerHTML = '';
