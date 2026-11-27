@@ -843,6 +843,56 @@ if (esAlumno){
 
   window.addEventListener('load', () => renderTex());
 }
+  /* ===== PARCHE: sobreescribe irA para tolerar elementos faltantes ===== */
+(function(){
+  // Solo en modo docente
+  if (esAlumno) return;
+
+  const _slides = [...document.querySelectorAll('#docente .slide')];
+  let _actual = 0;
+
+  // Reemplaza la función global irA
+  window.irA = function(n){
+    _actual = Math.max(0, Math.min(n, _slides.length - 1));
+    _slides.forEach((s, k) => s.classList.toggle('activa', k === _actual));
+
+    const barra    = document.getElementById('barra');
+    const contador = document.getElementById('contador');
+    const lf       = document.getElementById('logo-fijo');
+    if (barra)    barra.style.width = ((_actual + 1) / _slides.length * 100) + '%';
+    if (contador) contador.textContent = (_actual + 1) + ' / ' + _slides.length;
+    if (lf)       lf.style.visibility = _actual === 0 ? 'hidden' : 'visible';
+
+    try {
+      db.ref(R + '/estado').set({slide: _actual})
+        .then(() => console.log('[Firebase] estado → slide ' + _actual))
+        .catch(e => console.error('[Firebase] error al escribir estado:', e));
+    } catch(e){ console.error('[Firebase] excepción al escribir estado:', e); }
+
+    renderTex();
+  };
+
+  // Reengancha los botones al nuevo irA
+  const next = document.getElementById('next');
+  const prev = document.getElementById('prev');
+  if (next) next.onclick = () => window.irA(_actual + 1);
+  if (prev) prev.onclick = () => window.irA(_actual - 1);
+
+  // Reengancha el teclado
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (['ArrowRight',' ','PageDown'].indexOf(e.key) >= 0){ e.preventDefault(); window.irA(_actual + 1); }
+    if (['ArrowLeft','PageUp'].indexOf(e.key) >= 0) window.irA(_actual - 1);
+  });
+
+  // Re-sincroniza el estado inicial
+  try {
+    db.ref(R + '/estado').once('value', s => {
+      const v = s.val();
+      window.irA((v && typeof v.slide === 'number') ? v.slide : 0);
+    });
+  } catch(e){ console.error('irA init:', e); }
+})();
 </script>
 </body>
 </html>
