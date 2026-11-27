@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
+<title>Primitivas Básicas — Clase interactiva</title>
+
+<!-- Librerías externas -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+  :root{
+    --verde:#2E9E4A; --verde-claro:#7ED491;
+    --azul:#1E2A5E; --azul-claro:#3D5BA9;
+    --dorado:#fde047; --rojo:#f87171;
+    --tarjeta:rgba(255,255,255,.08); --borde:rgba(255,255,255,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:#fff;
+       background:linear-gradient(135deg,#0d1533 0%,#1E2A5E 55%,#14532d 100%);
+       background-attachment:fixed;overflow:hidden}
+  body.alumno{overflow:auto;height:auto;min-height:100%;padding:1rem}
+  body.alumno #docente{display:none}
+  body:not(.alumno) #alumno{display:none}
+  body.alumno .nav,body.alumno .barra{display:none}
+
+  .logo-fijo{position:fixed;top:14px;right:18px;height:64px;object-fit:contain;z-index:20;pointer-events:none}
+  .logo-centro{height:220px;max-width:85%;object-fit:contain;margin-bottom:.4rem}
+
+  .slide{display:none;position:fixed;inset:0;padding:4vh 5vw;flex-direction:column;
+         align-items:center;justify-content:center;text-align:center;overflow:auto;animation:entrar .5s ease}
+  .slide.activa{display:flex}
+  @keyframes entrar{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:.4em}
+  h2{font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:.5em}
+  h3{font-size:1.2rem;margin-bottom:.4em;color:var(--verde-claro)}
+  p{font-size:clamp(1rem,2vw,1.25rem);line-height:1.5;margin:.4em 0}
+  .portada-c{display:flex;flex-direction:column;align-items:center;gap:.3rem}
+
+  .qr-solo{background:#fff;border-radius:28px;padding:1.4rem 1.8rem;color:var(--azul);margin-top:1rem}
+  .qr-solo canvas,.qr-solo img{display:block;margin:auto}
+
+  .caja{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;
+        padding:1rem 1.3rem;margin-top:.8rem;width:min(900px,100%);text-align:left}
+  .dos{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:min(1000px,100%);margin-top:.8rem}
+  .tres{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;width:min(1100px,100%);margin-top:.8rem}
+  .dos .caja, .tres .caja{margin-top:0}
+
+  .eq{display:block;text-align:center;font-size:clamp(1.1rem,2.2vw,1.5rem);margin:.7rem 0;
+      padding:.5rem 1rem;background:rgba(255,255,255,.06);border-radius:14px;border:1px solid var(--borde)}
+  .eq-grande{font-size:clamp(1.3rem,2.8vw,1.8rem)}
+
+  .exercise{background:var(--tarjeta);border:1px solid var(--borde);border-radius:20px;
+            padding:1rem 1.4rem;width:min(920px,100%);margin:.8rem 0;text-align:left}
+  .paso{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:.55rem 0;font-size:1.05rem}
+  .blk{width:180px;padding:.45rem .6rem;border-radius:8px;border:2px solid var(--verde-claro);
+       background:rgba(255,255,255,.06);color:#fff;font-size:1rem;text-align:center;font-family:inherit}
+  .blk:focus{outline:none;border-color:var(--dorado);background:rgba(255,255,255,.14)}
+  .solucion{display:none;margin-top:.8rem;padding:.7rem 1rem;border-radius:12px;
+            background:rgba(126,212,145,.15);border:1px solid var(--verde-claro);font-weight:600}
+
+  .sort-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:min(1000px,100%);margin-top:.6rem}
+  .sort-col{background:var(--tarjeta);border:1px solid var(--borde);border-radius:16px;
+            padding:.8rem;min-height:200px}
+  .sort-col h4{color:var(--verde-claro);margin-bottom:.5rem;font-size:1rem;text-align:center}
+  .sort-item{background:rgba(255,255,255,.1);border:1px solid var(--borde);border-radius:10px;
+             padding:.5rem .7rem;margin:.35rem 0;cursor:pointer;font-size:.95rem;
+             display:flex;align-items:center;gap:.5rem;transition:.15s}
+  .sort-item:hover{background:rgba(255,255,255,.2)}
+  .sort-item .badge{display:inline-flex;align-items:center;justify-content:center;
+                    width:1.7rem;height:1.7rem;border-radius:50%;background:var(--verde);
+                    font-weight:800;flex-shrink:0}
+
+  .nube-lista{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem 1.2rem;
+              width:min(1000px,100%);min-height:160px;margin-top:.8rem}
+  .palabra{font-size:clamp(1.1rem,2.4vw,1.8rem);font-weight:800;line-height:1.2;
+           text-shadow:0 2px 10px rgba(0,0,0,.45)}
+
+  #alumno{max-width:720px;margin:0 auto}
+  #alumno>h2{text-align:center;font-size:1.9rem;margin-bottom:.3rem}
+  .estado{text-align:center;color:var(--verde-claro);font-weight:700;margin-bottom:.8rem;font-size:.95rem}
+  .bloque{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;padding:1rem;margin-bottom:1rem}
+  .act{display:none}
+  .act.on{display:block}
+  input[type=text]{width:100%;padding:.75rem 1rem;border-radius:12px;border:none;font-size:1rem;margin:.3rem 0}
+  .botones{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}
+  .msg{min-height:1.4em;font-weight:700;color:var(--dorado);margin-top:.4rem;font-size:.95rem}
+
+  .btn{display:inline-block;padding:.7rem 1.2rem;border-radius:999px;border:none;font-size:1rem;
+       font-weight:700;cursor:pointer;color:#fff;background:var(--verde);text-decoration:none}
+  .btn.azul{background:var(--azul-claro)} .btn.rojo{background:#b91c1c}
+  .btn:hover{filter:brightness(1.12)}
+  .btn:disabled{opacity:.4;cursor:default}
+
+  .barra{position:fixed;bottom:0;left:0;height:6px;background:linear-gradient(90deg,var(--verde),var(--verde-claro));transition:width .4s}
+  .nav{position:fixed;bottom:16px;right:18px;display:flex;gap:8px;align-items:center;z-index:5}
+  .nav button{background:rgba(255,255,255,.15);color:#fff;border:1px solid var(--borde);
+              border-radius:12px;padding:.5rem .9rem;font-size:1rem;cursor:pointer}
+  .nav span{font-size:.95rem;opacity:.85;min-width:56px;text-align:center}
+
+  .subs{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+  .sub-pill{padding:.3rem .7rem;border-radius:999px;background:rgba(255,255,255,.12);
+            font-size:.85rem;border:1px solid var(--borde)}
+  .sub-pill.ok{background:rgba(126,212,145,.28);border-color:var(--verde-claro)}
+  .sub-pill.bad{background:rgba(248,113,113,.28);border-color:var(--rojo)}
+  .tally{font-weight:700;color:var(--dorado);margin-top:.6rem;font-size:1.05rem;display:none}
+
+  @media (max-width:700px){
+    .dos,.tres,.sort-wrap{grid-template-columns:1fr}
+    .logo-fijo{height:44px}
+    .logo-centro{height:130px}
+    .blk{width:130px}
+  }
+</style>
+</head>
+<body>
+
+<script>
+const CONFIG = {
+  sala: "calculo-primitivas-basicas",
+  firebase: {
+    apiKey:            "TU_API_KEY_AQUI",
+    authDomain:        "calculo-primitivas.firebaseapp.com",
+    databaseURL:       "https://calculo-primitivas-default-rtdb.firebaseio.com",
+    projectId:         "calculo-primitivas",
+    storageBucket:     "calculo-primitivas.firebasestorage.app",
+    messagingSenderId: "1091496478057",
+    appId:             "1:1091496478057:web:0c2ee1101fb831d86ae9f8"
+  },
+  docente: "Dr. J. Adrián Cerda R."
+};
+</script>
+
+<div id="docente">
+  <img class="logo-fijo" id="logo-fijo" alt="Universidad" style="visibility:hidden">
+
+  <!-- DIAPOSITIVA 1: PORTADA -->
+  <section class="slide activa">
+    <div class="portada-c">
+      <img class="logo-centro" id="logo-centro" alt="Universidad">
+      <h1>Cálculo de Primitivas</h1>
+      <p style="font-size:1.3rem;opacity:.95">Reglas básicas de integración inmediata</p>
+      <p><b>Dr. J. Adrián Cerda R.</b></p>
+      <p style="opacity:.8">Cálculo Integral · Fundamentos</p>
+    </div>
+  </section>
+
+  <!-- DIAPOSITIVA 2: QR -->
+  <section class="slide">
+    <h2>📱 Escanea para participar</h2>
+    <div class="qr-solo"><div id="qr-grande"></div></div>
+    <p style="opacity:.8;margin-top:1rem">Abre el enlace en tu celular y escribe tu nombre.</p>
+  </section>
+
+  <!-- DIAPOSITIVA 3: OBJETIVOS -->
+  <section class="slide">
+    <h2>🎯 Al final de la clase podrás…</h2>
+    <div class="caja">
+      <p>1. Aplicar la <b>regla de la potencia</b> para exponentes enteros, fraccionarios y negativos.</p>
+      <p>2. Identificar las primitivas inmediatas de funciones <b>transcendentes</b> ($e^x, \ln x, \sin x, \cos x$).</p>
+      <p>3. Reconocer la excepción crítica cuando $n = -1$.</p>
+      <p>4. Resolver integrales combinando linealidad y reglas básicas.</p>
+    </div>
+  </section>
+
+  <!-- DIAPOSITIVA 4: REGLA DE LA POTENCIA -->
+  <section class="slide">
+    <h2>⚡ La Regla de la Potencia</h2>
+    <p>Para cualquier número real $n \neq -1$, aumentamos el exponente en 1 y dividimos por el nuevo exponente.</p>
+    <div class="eq eq-grande" data-tex="\int x^n \, dx = \frac{x^{n+1}}{n+1} + C"></div>
+    <div class="caja" style="margin-top:1rem">
+      <h3>⚠️ La gran excepción</h3>
+      <p>Si $n = -1$, la fórmula anterior divide por cero. En este caso usamos el logaritmo natural:</p>
+      <div class="eq" data-tex="\int x^{-1} \, dx = \int \frac{1}{x} \, dx = \ln|x| + C"></div>
+    </div>
+  </section>
+
+  <!-- DIAPOSITIVA 5: FUNCIONES TRASCENDENTES -->
+  <section class="slide">
+    <h2>🌊 Funciones Transcendentes</h2>
+    <div class="tres">
+      <div class="caja">
+        <h3>Exponencial</h3>
+        <div class="eq" data-tex="\int e^x \, dx = e^x + C"></div>
+        <p style="font-size:.9rem;opacity:.8">La única función que es su propia primitiva.</p>
+      </div>
+      <div class="caja">
+        <h3>Trigonométricas</h3>
+        <div class="eq" data-tex="\int \cos x \, dx = \sin x + C"></div>
+        <div class="eq" data-tex="\int \sin x \, dx = -\cos x + C"></div>
+        <p style="font-size:.9rem;opacity:.8">¡Cuidado con el signo menos!</p>
+      </div>
+      <div class="caja">
+        <h3>Logaritmo</h3>
+        <div class="eq" data-tex="\int \frac{1}{x} \, dx = \ln|x| + C"></div>
+        <p style="font-size:.9rem;opacity:.8">Válido para $x \neq 0$.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIAPOSITIVA 6: EJEMPLO RESUELTO -->
+  <section class="slide">
+    <h2>✏️ Ejemplo: Potencia Fraccionaria</h2>
+    <div class="eq eq-grande" data-tex="\int \sqrt{x} \, dx"></div>
+    <div class="caja">
+      <p><b>Paso 1.</b> Reescribir el radical como potencia racional:</p>
+      <div class="eq" data-tex="\sqrt{x} = x^{1/2}"></div>
+      <p><b>Paso 2.</b> Aplicar la regla de la potencia ($n = 1/2$):</p>
+      <div class="eq" data-tex="\frac{x^{(1/2)+1}}{(1/2)+1} = \frac{x^{3/2}}{3/2}"></div>
+      <p><b>Paso 3.</b> Simplificar:</p>
+      <div class="eq" data-tex="\boxed{\;\frac{2}{3}x^{3/2} + C\;}"></div>
+    </div>
+  </section>
+
+  <!-- DIAPOSITIVA 7: VOTO / PREGUNTA CONCEPTUAL -->
+  <section class="slide">
+    <h2>🗳️ ¿Cuál es la primitiva correcta?</h2>
+    <div class="eq eq-grande" data-tex="\int \frac{1}{x^2} \, dx"></div>
+    <div class="caja" id="votos-docente"></div>
+    <div class="tally" id="votos-tally"></div>
+    <div class="botones" style="justify-content:center">
+      <button class="btn azul" id="reveal-voto">💡 Revelar respuesta correcta</button>
+    </div>
+  </section>
+
+  <!-- EJERCICIOS INTERACTIVOS -->
+  <section class="slide"><h2>🧩 Ejercicio 1A · Potencia Entera</h2><div id="doc-ej1"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 1B · Potencia Negativa</h2><div id="doc-ej2"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 2A · Raíces (Fracciones)</h2><div id="doc-ej3"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 2B · Ordena el proceso</h2><div id="doc-ej4"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 3A · Exponencial y Linealidad</h2><div id="doc-ej5"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 3B · Trigonométricas</h2><div id="doc-ej6"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 4A · El caso especial (n=-1)</h2><div id="doc-ej7"></div></section>
+  <section class="slide"><h2>🧩 Ejercicio 4B · Mixto</h2><div id="doc-ej8"></div></section>
+
+  <!-- NUBE DE PALABRAS -->
+  <section class="slide">
+    <h2>☁️ ¿Qué concepto se te dificulta más?</h2>
+    <p>Escribe una palabra (ej: "signos", "fracciones", "logaritmo").</p>
+    <div class="nube-lista" id="nube"></div>
+  </section>
+
+  <!-- CIERRE -->
+  <section class="slide">
+    <div style="font-size:4rem">🌟</div>
+    <p style="font-size:clamp(1.4rem,3vw,2.2rem);line-height:1.4;max-width:900px">
+      Integrar es el arte de deshacer la derivada.<br>
+      <b>Dominando lo básico, dominarás lo complejo.</b>
+    </p>
+    <p style="margin-top:1.4rem;opacity:.85">Dr. J. Adrián Cerda R.</p>
+  </section>
+
+  <div class="barra" id="barra"></div>
+  <div class="nav">
+    <button id="prev">◀</button>
+    <span id="contador"></span>
+    <button id="next">▶</button>
+    <button id="reset" title="Borrar participaciones">⟲</button>
+  </div>
+</div>
+
+<div id="alumno">
+  <h2>Participa 📱</h2>
+  <p class="estado" id="alumno-estado">Conectando…</p>
+  <input type="text" id="nombre" placeholder="Tu nombre" maxlength="30">
+
+  <div class="bloque" id="espera"><p>Observa la pantalla. La actividad aparecerá cuando el docente la abra.</p></div>
+
+  <div class="act bloque" data-act="votos">
+    <h3>¿Cuál es la primitiva correcta?</h3>
+    <div class="eq" style="font-size:1.1rem" data-tex="\int \frac{1}{x^2}\,dx"></div>
+    <div class="botones" id="votos-alumno" style="flex-direction:column"></div>
+    <div class="msg" id="msg-voto"></div>
+  </div>
+
+  <div class="act bloque" data-act="ej1" id="alumno-ej1"></div>
+  <div class="act bloque" data-act="ej2" id="alumno-ej2"></div>
+  <div class="act bloque" data-act="ej3" id="alumno-ej3"></div>
+  <div class="act bloque" data-act="ej4" id="alumno-ej4"></div>
+  <div class="act bloque" data-act="ej5" id="alumno-ej5"></div>
+  <div class="act bloque" data-act="ej6" id="alumno-ej6"></div>
+  <div class="act bloque" data-act="ej7" id="alumno-ej7"></div>
+  <div class="act bloque" data-act="ej8" id="alumno-ej8"></div>
+
+  <div class="act bloque" data-act="palabra">
+    <h3>¿Qué concepto se te dificulta más?</h3>
+    <input type="text" id="palabra" placeholder="Una palabra" maxlength="120">
+    <div class="botones"><button class="btn" id="btn-palabra">Enviar</button></div>
+    <div class="msg" id="msg-palabra"></div>
+  </div>
+</div>
+
+<script>
+/* ============ INIT ============ */
+const params = new URLSearchParams(location.search);
+const esAlumno = params.has('p');
+if (esAlumno) document.body.classList.add('alumno');
+const $ = id => document.getElementById(id);
+const linkAlumno = location.href.split('?')[0] + '?p=1';
+
+firebase.initializeApp(CONFIG.firebase);
+const db = firebase.database();
+const R  = 'sala/' + CONFIG.sala;
+
+db.ref('.info/connected').on('value', s => {
+  console.log('[Firebase] ' + (s.val() ? '✅ conectado' : '❌ desconectado') + ' — ' + R);
+});
+
+/* ============ KATEX ============ */
+function renderTex(root){
+  (root || document).querySelectorAll('[data-tex]').forEach(el => {
+    if (el.dataset.rendered === '1') return;
+    try { katex.render(el.dataset.tex, el, {throwOnError:false, displayMode:false}); el.dataset.rendered = '1'; }
+    catch(e){ el.textContent = el.dataset.tex; }
+  });
+}
+function tex(latex){
+  const s = document.createElement('span');
+  try { katex.render(latex, s, {throwOnError:false, displayMode:false}); }
+  catch(e){ s.textContent = latex; }
+  return s;
+}
+window.addEventListener('load', () => renderTex());
+
+/* ============ UTILS ============ */
+function el(tag, cls, txt){
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (txt != null) e.textContent = txt;
+  return e;
+}
+function qr(cont, texto, tam){
+  cont.innerHTML = '';
+  new QRCode(cont, {text:texto, width:tam, height:tam, colorDark:'#1E2A5E', colorLight:'#ffffff'});
+}
+function cargarLogo(id){
+  const img = $(id); if (!img) return;
+  const svg = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 100">' +
+    '<rect width="260" height="100" rx="16" fill="#1E2A5E"/>' +
+    '<text x="130" y="72" font-size="60" text-anchor="middle" fill="#7ED491" font-family="Georgia,serif" font-style="italic">∫ f(x) dx</text>' +
+    '</svg>');
+  img.onerror = () => { img.onerror = null; img.src = svg; };
+  img.src = 'logo.png';
+}
+function normalizar(s){
+  return (s||'').toString().toLowerCase().replace(/\s+/g,'').replace(/[·*×]/g,'');
+}
+
+/* ============ ESTADO ============ */
+let VER = '0';
+const fkey     = k => CONFIG.sala + '-' + VER + '-' + k;
+const leer     = k => localStorage.getItem(fkey(k));
+const setLocal = (k, v) => localStorage.setItem(fkey(k), v);
+const flag     = k => leer(k) === '1';
+const setFlag  = k => setLocal(k, '1');
+
+/* ============ DATOS DE EJERCICIOS ============ */
+const VOTO = {
+  opciones: [
+    {id:'A', tex:'\\ln|x| + C',      ok:false},
+    {id:'B', tex:'-\\frac{1}{x} + C', ok:true },
+    {id:'C', tex:'\\frac{x^{-1}}{-1}', ok:false}, 
+    {id:'D', tex:'2\\ln|x| + C',      ok:false}
+  ]
+};
+
+const EX = {
+  ej1: {
+    type: 'completar',
+    integral: '\\int x^5 \\, dx',
+    intro: 'Aplica la regla de la potencia. Completa los pasos:',
+    blanks: [
+      {label:'Nuevo exponente:', correct:['6']},
+      {label:'Divisor:', correct:['6']}
+    ],
+    final: {label:'Resultado final:', correct:[
+      'x^6/6+C','1/6x^6+C','(x^6)/6+C',
+      'x⁶/6+C','1/6x⁶+C'
+    ]},
+    solution: 'Aumentamos el exponente a 6 y dividimos por 6: \\frac{x^6}{6} + C'
+  },
+  ej2: {
+    type: 'completar',
+    integral: '\\int \\frac{1}{x^3} \\, dx',
+    intro: 'Reescribe como potencia negativa y resuelve:',
+    blanks: [
+      {label:'Reescritura:', correct:['x^-3','x⁻³']},
+      {label:'Nuevo exponente:', correct:['-2']},
+      {label:'Divisor:', correct:['-2']}
+    ],
+    final: {label:'Resultado final:', correct:[
+      '-1/(2x^2)+C','-1/2x^-2+C','-x^-2/2+C',
+      '-1/(2x²)+C','-½x⁻²+C'
+    ]},
+    solution: 'x^{-3} \\to \\frac{x^{-2}}{-2} = -\\frac{1}{2x^2} + C'
+  },
+  ej3: {
+    type: 'ordenar',
+    integral: '\\int \\sqrt[3]{x^2} \\, dx',
+    steps: [
+      {id:0, tex:'\\sqrt[3]{x^2} = x^{2/3}'},
+      {id:1, tex:'n = 2/3 \\implies n+1 = 5/3'},
+      {id:2, tex:'\\frac{x^{5/3}}{5/3}'},
+      {id:3, tex:'\\frac{3}{5}x^{5/3} + C'}
+    ],
+    solution: 'Convertir radical a fracción (2/3), sumar 1 (5/3), dividir por 5/3 (multiplicar por 3/5).'
+  },
+  ej4: {
+    type: 'ordenar',
+    integral: '\\int (3x^2 + 4x) \\, dx',
+    steps: [
+      {id:0, tex:'Separar: \\int 3x^2 dx + \\int 4x dx'},
+      {id:1, tex:'Sacar constantes: 3\\int x^2 dx + 4\\int x dx'},
+      {id:2, tex:'Integrar potencias: 3(\\frac{x^3}{3}) + 4(\\frac{x^2}{2})'},
+      {id:3, tex:'Simplificar: x^3 + 2x^2 + C'}
+    ],
+    solution: 'Linealidad: integrar término a término y simplificar coeficientes.'
+  },
+  ej5: {
+    type: 'opciones',
+    integral: '\\int (e^x + 2) \\, dx',
+    opciones: [
+      {id:'A', tex:'e^x + 2x + C',   ok:true },
+      {id:'B', tex:'e^x + 2 + C',    ok:false},
+      {id:'C', tex:'xe^x + 2x + C',  ok:false},
+      {id:'D', tex:'e^{2x} + C',     ok:false}
+    ],
+    solution: 'La primitiva de e^x es e^x, y la de la constante 2 es 2x.'
+  },
+  ej6: {
+    type: 'opciones',
+    integral: '\\int (\\cos x - \\sin x) \\, dx',
+    opciones: [
+      {id:'A', tex:'\\sin x + \\cos x + C', ok:true },
+      {id:'B', tex:'\\sin x - \\cos x + C', ok:false},
+      {id:'C', tex:'-\\sin x - \\cos x + C', ok:false},
+      {id:'D', tex:'\\cos x + \\sin x + C', ok:false}
+    ],
+    solution: '\\int \\cos x = \\sin x y \\int -\\sin x = \\cos x.'
+  },
+  ej7: {
+    type: 'completar',
+    integral: '\\int \\frac{5}{x} \\, dx',
+    intro: 'Recuerda el caso especial n = -1.',
+    blanks: [
+      {label:'Constante fuera:', correct:['5']},
+      {label:'Integral de 1/x:', correct:['ln|x|','ln(x)','log|x|']}
+    ],
+    final: {label:'Resultado final:', correct:[
+      '5ln|x|+C','5ln(x)+C','5ln|x| + C'
+    ]},
+    solution: '5 \\int \\frac{1}{x} dx = 5 \\ln|x| + C'
+  },
+  ej8: {
+    type: 'completar',
+    integral: '\\int (x^{-1} + x^{-2}) \\, dx',
+    intro: 'Combina el caso logarítmico y la regla de potencia.',
+    blanks: [
+      {label:'Primer término (1/x):', correct:['ln|x|','ln(x)']},
+      {label:'Segundo término (x^-2):', correct:['-1/x','-x^-1','-x^{-1}']}
+    ],
+    final: {label:'Resultado final:', correct:[
+      'ln|x|-1/x+C','ln(x)-x^-1+C','ln|x|-x^{-1}+C'
+    ]},
+    solution: '\\ln|x| para el primero, \\frac{x^{-1}}{-1} = -\\frac{1}{x} para el segundo.'
+  }
+};
+
+const DIAPOS = [
+  {t:'Portada',      act:null},
+  {t:'QR',           act:null},
+  {t:'Objetivos',    act:null},
+  {t:'Potencia',     act:null},
+  {t:'Transcendentes', act:null},
+  {t:'Ejemplo',      act:null},
+  {t:'Voto Conceptual', act:'votos'},
+  {t:'Ejercicio 1A', act:'ej1'},
+  {t:'Ejercicio 1B', act:'ej2'},
+  {t:'Ejercicio 2A', act:'ej3'},
+  {t:'Ejercicio 2B', act:'ej4'},
+  {t:'Ejercicio 3A', act:'ej5'},
+  {t:'Ejercicio 3B', act:'ej6'},
+  {t:'Ejercicio 4A', act:'ej7'},
+  {t:'Ejercicio 4B', act:'ej8'},
+  {t:'Nube',         act:'palabra'},
+  {t:'Cierre',       act:null}
+];
+
+/* ============ RENDERS DE EJERCICIOS ============ */
+function renderEjercicio(id, container, isTeacher){
+  container.innerHTML = '';
+  const ex = EX[id];
+
+  const eq = el('div', 'eq eq-grande');
+  eq.setAttribute('data-tex', ex.integral);
+  container.appendChild(eq);
+
+  if (ex.type === 'completar') renderCompletar(id, ex, container, isTeacher);
+  else if (ex.type === 'ordenar') renderOrdenar(id, ex, container, isTeacher);
+  else if (ex.type === 'opciones') renderOpciones(id, ex, container, isTeacher);
+
+  if (isTeacher){
+    const panel = el('div', 'caja');
+    panel.innerHTML = '<h3>Envíos del grupo <span id="' + id + '-count" style="font-weight:400;font-size:.9rem;opacity:.8"></span></h3><div class="subs" id="' + id + '-subs"></div>';
+    container.appendChild(panel);
+    db.ref(R + '/' + id).on('value', s => {
+      const items = []; s.forEach(x => items.push(x.val()));
+      const cnt = $(id + '-count'); if (cnt) cnt.textContent = '(' + items.length + ')';
+      const subs = $(id + '-subs'); if (!subs) return;
+      subs.innerHTML = '';
+      items.slice(-40).forEach(it => {
+        const p = el('div', 'sub-pill');
+        const who = (it.n || '?') + (it.m === 'docente' ? ' 👨‍🏫' : '');
+        let res = '';
+        if (ex.type === 'completar'){
+          const ans = it.ans || [];
+          let allOk = true;
+          ex.blanks.forEach((b, i) => {
+            if (!b.correct.some(c => normalizar(c) === normalizar(ans[i]))) allOk = false;
+          });
+          if (ex.final && !ex.final.correct.some(c => normalizar(c) === normalizar(ans[ans.length-1]))) allOk = false;
+          p.className = 'sub-pill ' + (allOk ? 'ok' : 'bad');
+          res = ans.join(' | ').slice(0, 60);
+        } else if (ex.type === 'ordenar'){
+          // Ajuste para ejercicio con 4 pasos
+          const target = ex.steps.map(s=>s.id).join(',');
+          const ok = it.orden && it.orden.join(',') === target;
+          p.className = 'sub-pill ' + (ok ? 'ok' : 'bad');
+          res = ok ? '✓ orden correcto' : '✗ ' + ((it.orden||[]).length) + '/' + ex.steps.length;
+        } else if (ex.type === 'opciones'){
+          p.className = 'sub-pill ' + (it.ok ? 'ok' : 'bad');
+          res = it.op + (it.ok ? ' ✓' : ' ✗');
+        }
+        p.textContent = who + ': ' + res;
+        subs.appendChild(p);
+      });
+    });
+  }
+
+  renderTex(container);
+}
+
+function renderCompletar(id, ex, container, isTeacher){
+  const wrap = el('div', 'exercise');
+
+  if (ex.intro){
+    const p = el('p');
+    p.innerHTML = ex.intro;
+    wrap.appendChild(p);
+  }
+
+  const inputs = [];
+  ex.blanks.forEach(blk => {
+    const paso = el('div', 'paso');
+    const lbl = document.createElement('span');
+    lbl.setAttribute('data-tex', blk.label);
+    paso.appendChild(lbl);
+    const inp = el('input', 'blk');
+    inp.type = 'text';
+    inp.placeholder = '?';
+    inputs.push(inp);
+    paso.appendChild(inp);
+    if (blk.suffix){
+      const sfx = document.createElement('span');
+      sfx.setAttribute('data-tex', blk.suffix);
+      paso.appendChild(sfx);
+    }
+    wrap.appendChild(paso);
+  });
+
+  if (ex.final){
+    wrap.appendChild(el('p', '', ex.final.label || 'Resultado final:'));
+    const inp = el('input', 'blk');
+    inp.type = 'text';
+    inp.placeholder = '?';
+    inp.style.width = '100%';
+    inputs.push(inp);
+    wrap.appendChild(inp);
+  }
+
+  const btnRow = el('div', 'botones');
+  const submitBtn = el('button', 'btn', 'Enviar');
+  btnRow.appendChild(submitBtn);
+  if (isTeacher){
+    const revealBtn = el('button', 'btn azul', '💡 Revelar solución');
+    revealBtn.onclick = () => db.ref(R + '/reveal/' + id).set(true);
+    btnRow.appendChild(revealBtn);
+  }
+  wrap.appendChild(btnRow);
+
+  const msg = el('div', 'msg');
+  wrap.appendChild(msg);
+
+  const sol = el('div', 'solucion');
+  sol.innerHTML = '<b>💡 Solución:</b> ' + ex.solution;
+  wrap.appendChild(sol);
+
+  submitBtn.onclick = () => {
+    const n = isTeacher ? CONFIG.docente : ($('nombre') ? $('nombre').value.trim() : '');
+    if (!n){ msg.textContent = 'Escribe tu nombre primero.'; return; }
+    const ans = inputs.map(i => i.value.trim());
+    let allOk = true;
+    ex.blanks.forEach((b, i) => {
+      if (!b.correct.some(c => normalizar(c) === normalizar(ans[i]))) allOk = false;
+    });
+    if (ex.final && !ex.final.correct.some(c => normalizar(c) === normalizar(ans[ans.length-1]))) allOk = false;
+
+    const data = {n: n, ans: ans, t: Date.now()};
+    if (isTeacher) data.m = 'docente';
+    db.ref(R + '/' + id).push(data).then(() => {
+      if (allOk){
+        db.ref(R + '/reveal/' + id).set(true);
+        msg.textContent = '✅ ¡Correcto!';
+      } else {
+        msg.textContent = '❌ Revisa tus respuestas.';
+      }
+      if (!isTeacher){
+        setFlag('done-' + id);
+        setLocal('ans-' + id, JSON.stringify(ans));
+        inputs.forEach(i => i.disabled = true);
+        submitBtn.disabled = true;
+      }
+    }).catch(e => { msg.textContent = 'Error: ' + e.message; });
+  };
+
+  if (!isTeacher){
+    const saved = leer('ans-' + id);
+    if (saved){
+      try { JSON.parse(saved).forEach((v, i) => { if (inputs[i]) inputs[i].value = v; }); } catch(e){}
+    }
+    if (flag('done-' + id)){
+      inputs.forEach(i => i.disabled = true);
+      submitBtn.disabled = true;
+      msg.textContent = 'Ya enviaste este ejercicio ✅';
+    }
+  }
+
+  db.ref(R + '/reveal/' + id).on('value', s => {
+    sol.style.display = s.val() === true ? 'block' : 'none';
+  });
+
+  container.appendChild(wrap);
+}
+
+function renderOrdenar(id, ex, container, isTeacher){
+  const wrap = el('div', 'exercise');
+  wrap.appendChild(el('p', '', 'Toca los pasos en el orden lógico. Toca un paso ya colocado para devolverlo.'));
+
+  const grid = el('div', 'sort-wrap');
+  const colPool = el('div', 'sort-col');
+  colPool.innerHTML = '<h4>Disponibles</h4><div id="pool-' + id + '"></div>';
+  const colOrd = el('div', 'sort-col');
+  colOrd.innerHTML = '<h4>Tu orden</h4><div id="ord-' + id + '"></div>';
+  grid.appendChild(colPool); grid.appendChild(colOrd);
+  wrap.appendChild(grid);
+
+  let pool = ex.steps.slice().sort(() => Math.random() - 0.5);
+  let order = [];
+
+  function pintar(){
+    const p = $('pool-' + id), o = $('ord-' + id);
+    p.innerHTML = ''; o.innerHTML = '';
+    pool.forEach((s, i) => {
+      const d = el('div', 'sort-item');
+      d.appendChild(tex(s.tex));
+      d.onclick = () => { if (flag('done-' + id)) return; order.push(s); pool.splice(i,1); pintar(); };
+      p.appendChild(d);
+    });
+    order.forEach((s, i) => {
+      const d = el('div', 'sort-item');
+      const b = el('span', 'badge', String(i+1));
+      d.appendChild(b);
+      d.appendChild(tex(s.tex));
+      d.onclick = () => { if (flag('done-' + id)) return; pool.push(s); order.splice(i,1); pintar(); };
+      o.appendChild(d);
+    });
+    submitBtn.disabled = pool.length > 0 || flag('done-' + id);
+  }
+
+  const btnRow = el('div', 'botones');
+  const submitBtn = el('button', 'btn', 'Enviar');
+  btnRow.appendChild(submitBtn);
+  if (isTeacher){
+    const revealBtn = el('button', 'btn azul', '💡 Revelar solución');
+    revealBtn.onclick = () => db.ref(R + '/reveal/' + id).set(true);
+    btnRow.appendChild(revealBtn);
+  }
+  wrap.appendChild(btnRow);
+
+  const msg = el('div', 'msg');
+  wrap.appendChild(msg);
+  const sol = el('div', 'solucion');
+  sol.innerHTML = '<b>💡 Solución:</b> ' + ex.solution;
+  wrap.appendChild(sol);
+
+  submitBtn.onclick = () => {
+    const n = isTeacher ? CONFIG.docente : ($('nombre') ? $('nombre').value.trim() : '');
+    if (!n){ msg.textContent = 'Escribe tu nombre primero.'; return; }
+    const ids = order.map(s => s.id);
+    const target = ex.steps.map(s=>s.id).join(',');
+    const data = {n: n, orden: ids, t: Date.now()};
+    if (isTeacher) data.m = 'docente';
+    db.ref(R + '/' + id).push(data).then(() => {
+      const ok = ids.join(',') === target;
+      if (ok){
+        db.ref(R + '/reveal/' + id).set(true);
+        msg.textContent = '✅ ¡Correcto!';
+      } else {
+        msg.textContent = '❌ Revisa el orden.';
+      }
+      if (!isTeacher){ setFlag('done-' + id); submitBtn.disabled = true; }
+    }).catch(e => { msg.textContent = 'Error: ' + e.message; });
+  };
+
+  if (flag('done-' + id)){
+    msg.textContent = 'Ya enviaste este ejercicio ✅';
+  }
+
+  db.ref(R + '/reveal/' + id).on('value', s => {
+    sol.style.display = s.val() === true ? 'block' : 'none';
+  });
+
+  container.appendChild(wrap);
+  pintar();
+  renderTex(container);
+}
+
+function renderOpciones(id, ex, container, isTeacher){
+  const wrap = el('div', 'exercise');
+  wrap.appendChild(el('p', '', 'Selecciona la respuesta correcta:'));
+  const btns = el('div', 'botones');
+  btns.style.flexDirection = 'column';
+  const opBtns = [];
+  ex.opciones.forEach(op => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.style.textAlign = 'left';
+    btn.appendChild(document.createTextNode(op.id + ')  '));
+    btn.appendChild(tex(op.tex));
+    btn.onclick = () => {
+      if (flag('done-' + id)) return;
+      const n = isTeacher ? CONFIG.docente : ($('nombre') ? $('nombre').value.trim() : '');
+      if (!n){ msg.textContent = 'Escribe tu nombre primero.'; return; }
+      const data = {n: n, op: op.id, ok: op.ok, t: Date.now()};
+      if (isTeacher) data.m = 'docente';
+      db.ref(R + '/' + id).push(data).then(() => {
+        if (op.ok){
+          db.ref(R + '/reveal/' + id).set(true);
+          msg.textContent = '✅ ¡Correcto!';
+        } else {
+          msg.textContent = '❌ Casi. Vuelve a intentar o espera la revelación.';
+        }
+        if (!isTeacher){ setFlag('done-' + id); opBtns.forEach(b => b.disabled = true); }
+      }).catch(e => { msg.textContent = 'Error: ' + e.message; });
+    };
+    opBtns.push(btn);
+    btns.appendChild(btn);
+  });
+  wrap.appendChild(btns);
+  const msg = el('div', 'msg');
+  wrap.appendChild(msg);
+  const sol = el('div', 'solucion');
+  sol.innerHTML = '<b>💡 Solución:</b> ' + ex.solution;
+  wrap.appendChild(sol);
+
+  if (flag('done-' + id)){
+    opBtns.forEach(b => b.disabled = true);
+    msg.textContent = 'Ya enviaste tu respuesta ✅';
+  }
+
+  db.ref(R + '/reveal/' + id).on('value', s => {
+    sol.style.display = s.val() === true ? 'block' : 'none';
+  });
+
+  container.appendChild(wrap);
+  renderTex(container);
+}
+
+/* ============ VISTA DOCENTE ============ */
+if (!esAlumno){
+  cargarLogo('logo-fijo');
+  cargarLogo('logo-centro');
+  qr($('qr-grande'), linkAlumno, 260);
+
+  const slidesT = [...document.querySelectorAll('#docente .slide')];
+  let actual = 0;
+
+  function irA(n){
+    actual = Math.max(0, Math.min(n, slidesT.length - 1));
+    slidesT.forEach((s, k) => s.classList.toggle('activa', k === actual));
+    const barra = $('barra');
+    if (barra) barra.style.width = ((actual + 1) / slidesT.length * 100) + '%';
+    const cont = $('contador');
+    if (cont) cont.textContent = (actual + 1) + ' / ' + slidesT.length;
+    const lf = $('logo-fijo');
+    if (lf) lf.style.visibility = actual === 0 ? 'hidden' : 'visible';
+    db.ref(R + '/estado').set({slide: actual})
+      .then(() => console.log('[Firebase] estado → ' + actual))
+      .catch(e => console.error('[Firebase] error estado:', e));
+    renderTex();
+  }
+
+  $('next').onclick = () => irA(actual + 1);
+  $('prev').onclick = () => irA(actual - 1);
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (['ArrowRight',' ','PageDown'].indexOf(e.key) >= 0){ e.preventDefault(); irA(actual + 1); }
+    if (['ArrowLeft','PageUp'].indexOf(e.key) >= 0) irA(actual - 1);
+  });
+  $('reset').onclick = () => {
+    if (!confirm('¿Borrar todas las participaciones?')) return;
+    const removes = [
+      db.ref(R + '/votos').remove(),
+      db.ref(R + '/nube').remove(),
+      db.ref(R + '/reveal').remove(),
+      db.ref(R + '/ver').set(String(Date.now()))
+    ];
+    Object.keys(EX).forEach(k => removes.push(db.ref(R + '/' + k).remove()));
+    
+    Promise.all(removes).then(() => irA(0))
+      .catch(e => alert('No se pudo borrar: ' + e.message));
+  };
+
+  db.ref(R + '/estado').once('value', s => {
+    const v = s.val();
+    irA((v && typeof v.slide === 'number') ? v.slide : 0);
+  });
+  db.ref(R + '/ver').on('value', s => { VER = s.val() || '0'; });
+
+  Object.keys(EX).forEach(id => renderEjercicio(id, $('doc-' + id), true));
+
+  const votosCont = $('votos-docente');
+  VOTO.opciones.forEach(op => {
+    const row = el('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:.8rem;margin:.5rem 0';
+    const chip = el('div');
+    chip.style.cssText = 'width:2.4rem;height:2.4rem;border-radius:50%;background:var(--azul-claro);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0';
+    chip.textContent = op.id;
+    row.appendChild(chip);
+    const t = tex(op.tex); t.style.flex = '1';
+    row.appendChild(t);
+    const bar = el('div');
+    bar.style.cssText = 'flex:2;height:26px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden;border:1px solid var(--borde)';
+    const fill = el('div');
+    fill.id = 'voto-fill-' + op.id;
+    fill.style.cssText = 'height:100%;width:0;transition:width .5s;background:' + (op.ok ? 'var(--verde-claro)' : 'var(--azul-claro)');
+    bar.appendChild(fill);
+    row.appendChild(bar);
+    const cnt = el('div', '', '0');
+    cnt.id = 'voto-cnt-' + op.id;
+    cnt.style.cssText = 'min-width:2rem;text-align:right;font-weight:800;color:var(--dorado)';
+    row.appendChild(cnt);
+    votosCont.appendChild(row);
+  });
+  db.ref(R + '/votos').on('value', s => {
+    const c = {A:0,B:0,C:0,D:0};
+    s.forEach(ch => { const v = ch.val(); if (v && v.op in c) c[v.op]++; });
+    const total = (c.A + c.B + c.C + c.D) || 1;
+    Object.keys(c).forEach(k => {
+      const f = $('voto-fill-' + k); if (f) f.style.width = (c[k]/total*100) + '%';
+      const n = $('voto-cnt-' + k); if (n) n.textContent = c[k];
+    });
+    $('votos-tally').textContent = 'Correcta: B) -1/x + C — ' + c.B + ' de ' + total + ' acertaron';
+  });
+  $('reveal-voto').onclick = () => db.ref(R + '/reveal/voto').set(true);
+  db.ref(R + '/reveal/voto').on('value', s => {
+    $('votos-tally').style.display = s.val() === true ? 'block' : 'none';
+  });
+
+  const PALETA = ['#7ED491','#fde047','#ffffff','#60a5fa','#b388eb'];
+  db.ref(R + '/nube').on('value', s => {
+    const cont = $('nube'); cont.innerHTML = '';
+    let n = 0;
+    s.forEach(ch => {
+      const v = ch.val();
+      if (v && v.t){
+        const sp = el('span', 'palabra', v.t);
+        sp.style.color = PALETA[n % PALETA.length];
+        n++; cont.appendChild(sp);
+      }
+    });
+  });
+}
+
+/* ============ VISTA ALUMNO ============ */
+if (esAlumno){
+  let SLIDE = 0;
+
+  function pintarVotos(){
+    const c = $('votos-alumno'); c.innerHTML = '';
+    VOTO.opciones.forEach(op => {
+      const b = document.createElement('button');
+      b.className = 'btn';
+      b.style.textAlign = 'left';
+      b.appendChild(document.createTextNode(op.id + ')  '));
+      b.appendChild(tex(op.tex));
+      b.onclick = () => {
+        const n = $('nombre').value.trim();
+        if (!n){ $('msg-voto').textContent = 'Escribe tu nombre primero.'; return; }
+        db.ref(R + '/votos').push({op: op.id, n: n, t: Date.now()})
+          .then(() => { setFlag('voto'); $('msg-voto').textContent = '¡Voto registrado! ✅'; pintarVotos(); })
+          .catch(e => { $('msg-voto').textContent = 'Error: ' + e.message; });
+      };
+      if (flag('voto')) b.disabled = true;
+      c.appendChild(b);
+    });
+    if (flag('voto')) $('msg-voto').textContent = 'Ya votaste ✅';
+  }
+
+  function pintarActivo(){
+    const d = DIAPOS[SLIDE] || DIAPOS[0];
+    $('alumno-estado').textContent = 'Diapositiva ' + (SLIDE+1) + ' de ' + DIAPOS.length + ': ' + d.t;
+    document.querySelectorAll('#alumno .act').forEach(a =>
+      a.classList.toggle('on', a.dataset.act === d.act));
+    $('espera').style.display = d.act ? 'none' : 'block';
+    if (d.act === 'votos') pintarVotos();
+    if (d.act && EX[d.act]){
+      const cont = $('alumno-' + d.act);
+      if (cont && !cont.dataset.rendered){
+        renderEjercicio(d.act, cont, false);
+        cont.dataset.rendered = '1';
+      }
+    }
+    renderTex();
+  }
+
+  $('btn-palabra').onclick = () => {
+    if (flag('palabra')){ $('msg-palabra').textContent = 'Ya enviaste tu palabra ✅'; return; }
+    const t = $('palabra').value.trim().slice(0,120);
+    if (!t) return;
+    db.ref(R + '/nube').push({t: t})
+      .then(() => { setFlag('palabra'); $('palabra').value = ''; $('msg-palabra').textContent = '¡Gracias! 🙌'; })
+      .catch(e => { $('msg-palabra').textContent = 'Error: ' + e.message; });
+  };
+
+  db.ref(R + '/ver').on('value', s => { VER = s.val() || '0'; });
+  db.ref(R + '/estado').on('value', s => {
+    const v = s.val();
+    SLIDE = (v && typeof v.slide === 'number') ? v.slide : 0;
+    console.log('[Firebase] estado → ' + SLIDE);
+    pintarActivo();
+  });
+}
+</script>
+</body>
+</html>
